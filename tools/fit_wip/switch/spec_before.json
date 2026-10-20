@@ -1,0 +1,12 @@
+{"parts":[
+ {"file":"chassis-super-1.stl","color":[0.7,0.7,0.72]},
+ {"file":"chassis-super-1-switch-cover.stl","color":[0.95,0.45,0.1]},
+ {"file":"chassis-super-1-switch-on-off.stl","color":[0.1,0.5,0.95]}
+],
+"views":[
+ {"name":"side","dir":"side","center":[39,25,14],"scale":60,"res":[1400,900]},
+ {"name":"top","dir":"top","center":[39,25,14],"scale":90,"res":[1200,1000]},
+ {"name":"bottom","dir":"bottom","center":[39,25,14],"scale":90,"res":[1200,1000]},
+ {"name":"front","dir":"front","center":[39,25,14],"scale":90,"res":[1200,700]},
+ {"name":"iso","dir":"iso","vec":[1,-1.2,0.9],"center":[39,25,14],"scale":90,"res":[1200,1000]}
+]}

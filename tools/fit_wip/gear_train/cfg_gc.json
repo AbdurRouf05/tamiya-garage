@@ -1,0 +1,12 @@
+{"out": "C:/Users/arack/AppData/Local/Temp/claude/D--coding-cozy-village/bb2493d4-aa52-4045-a5e2-0a655a382ec3/scratchpad/wf/gear_train",
+ "parts": [
+  {"file": "D:/coding/tamiya-garage/models/source/super1-printables/chassis-super-1-gear-cover.stl", "color": [0.9,0.25,0.25]}
+ ],
+ "views": [
+  {"name":"gc_from_minusX", "loc":[-100,89.8,23], "rot":[90,0,-90], "scale":36, "res":[1200,1000]},
+  {"name":"gc_from_plusX", "loc":[100,89.8,23], "rot":[90,0,90], "scale":36, "res":[1200,1000]},
+  {"name":"gc_iso_inner", "target":[23,89.8,23], "dir":[1,0.6,-0.5], "scale":40, "res":[1200,1000]},
+  {"name":"gc_iso_inner2", "target":[23,89.8,23], "dir":[1,-0.7,0.3], "scale":40, "res":[1200,1000]},
+  {"name":"gc_iso_outer", "target":[23,89.8,23], "dir":[-1,0.6,0.6], "scale":40, "res":[1200,1000]},
+  {"name":"gc_bottom", "loc":[23,89.8,-100], "rot":[180,0,90], "scale":36, "res":[1200,1000]}
+ ]}

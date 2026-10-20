@@ -1,0 +1,11 @@
+{"parts":[
+ {"file":"chassis-super-1-switch-cover.stl","color":[0.95,0.45,0.1]}
+],
+"views":[
+ {"name":"cover_bottom","dir":"bottom","center":[38,15.4,13],"scale":46,"res":[1400,800]},
+ {"name":"cover_top","dir":"top","center":[38,15.4,13],"scale":46,"res":[1400,800]},
+ {"name":"cover_front","dir":"front","center":[38,15.4,13],"scale":46,"res":[1400,800]},
+ {"name":"cover_side","dir":"side","center":[38,15.4,13],"scale":30,"res":[1200,1000]},
+ {"name":"cover_iso_below","dir":"iso","vec":[0.8,-1,-0.9],"center":[38,15.4,13],"scale":50,"res":[1400,1000]},
+ {"name":"cover_iso_below2","dir":"iso","vec":[-0.8,1,-0.9],"center":[38,15.4,13],"scale":50,"res":[1400,1000]}
+]}

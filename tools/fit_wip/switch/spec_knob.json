@@ -1,0 +1,9 @@
+{"parts":[
+ {"file":"chassis-super-1-switch-on-off.stl","color":[0.1,0.5,0.95]}
+],
+"views":[
+ {"name":"knob_front","dir":"front","center":[45.6,18.55,10.7],"scale":14,"res":[900,900]},
+ {"name":"knob_side","dir":"side","center":[45.6,18.55,10.7],"scale":14,"res":[900,900]},
+ {"name":"knob_iso","dir":"iso","vec":[1,-1,0.6],"center":[45.6,18.55,10.7],"scale":16,"res":[900,900]},
+ {"name":"knob_iso_b","dir":"iso","vec":[-1,1,-0.6],"center":[45.6,18.55,10.7],"scale":16,"res":[900,900]}
+]}

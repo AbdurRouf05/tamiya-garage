@@ -1,0 +1,9 @@
+{"parts":[
+ {"file":"chassis-super-1.stl","color":[0.7,0.7,0.72]}
+],
+"views":[
+ {"name":"ch_top","dir":"top","center":[39,18,13],"scale":50,"res":[1400,1000]},
+ {"name":"ch_iso","dir":"iso","vec":[0.6,-1,1.0],"center":[39,18,10],"scale":50,"res":[1400,1000]},
+ {"name":"ch_iso2","dir":"iso","vec":[-0.6,-1,1.0],"center":[39,18,10],"scale":50,"res":[1400,1000]},
+ {"name":"ch_bot_iso","dir":"iso","vec":[0.6,-1,-1.0],"center":[39,18,10],"scale":50,"res":[1400,1000]}
+]}

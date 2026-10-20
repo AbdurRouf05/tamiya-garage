@@ -1,0 +1,14 @@
+{"out": "C:/Users/arack/AppData/Local/Temp/claude/D--coding-cozy-village/bb2493d4-aa52-4045-a5e2-0a655a382ec3/scratchpad/wf/gear_train",
+ "parts": [
+  {"file": "D:/coding/tamiya-garage/models/source/super1-printables/chassis-super-1.stl", "color": [0.6,0.6,0.63]},
+  {"file": "D:/coding/tamiya-garage/models/source/super1-printables/chassis-super-1-gear-cover.stl", "color": [0.9,0.25,0.25]},
+  {"file": "D:/coding/tamiya-garage/models/source/super1-printables/chassis-super-1-motor-bracket.stl", "color": [0.25,0.45,0.9]}
+ ],
+ "markers": [{"loc":[10,110,15.1],"r":0.6,"color":[0.1,0.8,0.2]},{"loc":[10,108.5,15.1],"r":0.6,"color":[0.9,0.8,0.1]}],
+ "views": [
+  {"name":"ov_iso_rear_right", "target":[35,95,15], "dir":[-1,1.2,1.1], "scale":70, "res":[1400,1000]},
+  {"name":"ov_iso_front_right", "target":[35,95,15], "dir":[-1.2,-0.8,1.0], "scale":70, "res":[1400,1000]},
+  {"name":"ov_iso_rear_left", "target":[40,95,15], "dir":[1,1.2,1.0], "scale":70, "res":[1400,1000]},
+  {"name":"ov_top", "loc":[39,95,100], "rot":[0,0,90], "scale":70, "res":[1400,1000]},
+  {"name":"ov_bottom", "loc":[39,95,-100], "rot":[180,0,90], "scale":70, "res":[1400,1000]}
+ ]}

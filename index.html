@@ -1,0 +1,1908 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Garasi Mini 4WD</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Russo+One&family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root { --panel:#0d1626e8; --panel2:#132036; --text:#eef2f8; --muted:#8b98ad; --accent:#e8423f; --blue:#4a8cff; --line:#24344f; --ok:#3ecf72; --warn:#ffb020; --bad:#ff5a4f; }
+  * { box-sizing:border-box; }
+  html,body { margin:0; height:100%; background:#1a1612; color:var(--text); font-family:Inter,system-ui,sans-serif; overflow:hidden; }
+  #app { position:fixed; inset:0; }
+  .display { font-family:"Russo One",Inter,sans-serif; font-style:italic; letter-spacing:.5px; }
+  button { background:var(--panel); color:var(--text); border:1px solid var(--line); border-radius:4px; padding:9px 14px; font:600 12px Inter,sans-serif; letter-spacing:1px; text-transform:uppercase; cursor:pointer; }
+  button:hover { border-color:var(--blue); }
+  button.on { background:var(--blue); border-color:var(--blue); }
+  button:disabled { opacity:.4; cursor:not-allowed; }
+
+  #brand { position:fixed; top:20px; left:24px; pointer-events:none; text-shadow:0 2px 12px #000a; }
+  #brand h1 { margin:0; font-size:30px; }
+  #brand h1 span { color:var(--accent); }
+  #brand p { margin:2px 0 0; font-size:11px; letter-spacing:3px; font-weight:800; color:#cfd6e2; }
+
+  #garage { position:fixed; top:90px; left:20px; bottom:178px; width:320px; background:var(--panel); border:1px solid var(--line); border-top:2px solid var(--blue); display:flex; flex-direction:column; backdrop-filter:blur(10px); }
+  #status { margin:12px 12px 4px; padding:10px 12px; font-size:12.5px; line-height:1.45; border-left:3px solid; }
+  #status.ok { background:#3ecf7218; border-color:var(--ok); }
+  #status.bad { background:#ff5a4f18; border-color:var(--bad); }
+  #status b { display:block; margin-bottom:2px; letter-spacing:.5px; }
+  #status ul { margin:4px 0 0; padding-left:16px; }
+  #status li.w { color:#ffd27a; }
+  #slots { overflow:auto; padding:2px 12px 12px; flex:1; }
+  .slot { margin:9px 0; }
+  .slot label { display:flex; justify-content:space-between; font-size:10.5px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; color:var(--muted); margin:0 1px 4px; }
+  .slot label .st { letter-spacing:0; }
+  select { width:100%; background:var(--panel2); color:var(--text); border:1px solid var(--line); border-radius:3px; padding:8px; font:13px Inter,sans-serif; }
+  select.bad { border-color:var(--bad); } select.warn { border-color:var(--warn); }
+  option.x { color:#ff8a80; }
+  .desc { font-size:11.5px; color:#a5b1c4; margin:4px 1px 0; line-height:1.4; }
+
+  #side { position:fixed; top:90px; right:20px; width:290px; background:var(--panel); border:1px solid var(--line); border-top:2px solid var(--blue); padding:16px; backdrop-filter:blur(10px); }
+  #side .who { display:flex; justify-content:space-between; font-size:11px; font-weight:800; letter-spacing:2px; color:var(--muted); }
+  #side h2 { margin:6px 0 2px; font-size:26px; line-height:1.05; }
+  #side .tag { font-size:12.5px; color:#c3cbd8; margin-bottom:12px; }
+  .stat { display:grid; grid-template-columns:118px 1fr 34px; align-items:center; gap:8px; font-size:11.5px; font-weight:600; letter-spacing:.8px; text-transform:uppercase; margin:7px 0; }
+  .bar { height:4px; background:#24344f; }
+  .bar i { display:block; height:100%; background:var(--blue); transition:width .45s; }
+  .stat span:last-child { text-align:right; font-weight:800; }
+  #side hr { border:0; border-top:1px solid var(--line); margin:12px 0; }
+  #side .btns { display:grid; gap:6px; }
+  #pov { display:flex; flex-wrap:wrap; gap:4px; margin-top:8px; }
+  #pov button { padding:6px 8px; font-size:10.5px; flex:1 0 28%; }
+
+  #presets { position:fixed; left:20px; right:330px; bottom:20px; display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+  .card { background:var(--panel); border:1px solid var(--line); padding:10px 14px; cursor:pointer; position:relative; overflow:hidden; min-height:120px; }
+  .card:hover { border-color:#3b5a8c; }
+  .card.on { border-color:var(--blue); box-shadow:inset 0 0 0 1px var(--blue); }
+  .card .n { font-size:11px; font-weight:800; color:var(--muted); font-style:italic; }
+  .card canvas { display:block; margin:2px auto 0; }
+  .card h4 { margin:2px 0 0; font-size:14px; letter-spacing:1px; }
+  .card p { margin:1px 0 0; font-size:11px; color:var(--muted); letter-spacing:1px; text-transform:uppercase; }
+
+  #info { position:fixed; left:360px; top:90px; width:270px; background:var(--panel); border:1px solid var(--line); border-left:3px solid var(--blue); padding:11px 13px; display:none; }
+  #info h3 { margin:0 0 4px; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; color:#8fb4ff; }
+  #info p { margin:0; font-size:12.5px; color:#d3d9e4; line-height:1.5; }
+  #hint { position:fixed; bottom:170px; left:calc(50% - 5px); transform:translateX(-50%); font-size:11px; font-weight:800; letter-spacing:2px; color:#fff; text-shadow:0 1px 6px #000; pointer-events:none; white-space:nowrap; }
+  /* Catatan part: berjajar di samping mobil, dihubungkan garis penunjuk */
+  #callouts { position:fixed; inset:0; width:100%; height:100%; pointer-events:none; }
+  .note { position:fixed; pointer-events:none; padding:4px 9px 5px; background:#fff6c2; color:#2b240c; border-left:3px solid #e8a800; box-shadow:0 3px 10px #0006; font-size:11.5px; font-weight:800; letter-spacing:.3px; white-space:nowrap; transform:translateY(-50%) rotate(-.6deg); opacity:0; transition:opacity .25s; }
+  .note small { display:block; font-size:10.5px; font-weight:400; color:#5e5226; }
+  #modes { position:fixed; top:24px; left:50%; transform:translateX(-50%); display:flex; }
+  #modes button { border-radius:0; margin-left:-1px; padding:9px 18px; }
+  #hud { position:fixed; top:84px; left:50%; transform:translateX(-50%); display:none; gap:6px; }
+  .hb { background:var(--panel); border:1px solid var(--line); border-top:2px solid var(--accent); padding:8px 16px; min-width:110px; text-align:center; }
+  .hb span { display:block; font-size:10px; font-weight:800; letter-spacing:2px; color:var(--muted); }
+  .hb b { font:400 26px "Russo One",sans-serif; font-style:italic; }
+  #trackCtl { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); display:none; gap:8px; }
+  #trackCtl button { padding:12px 22px; font-size:13px; }
+  #btnRace { background:var(--accent); border-color:var(--accent); }
+  #toast { position:fixed; top:170px; left:50%; transform:translateX(-50%); padding:10px 18px; background:#000c; border-left:3px solid var(--accent); font-weight:600; font-size:14px; opacity:0; transition:opacity .3s; pointer-events:none; text-align:center; max-width:520px; }
+  body.track #garage, body.track #presets, body.track #hint, body.track #info, body.track #side .btns, body.track #pov { display:none !important; }
+  body.track #hud, body.track #trackCtl { display:flex; }
+  body.studio #brand p, body.studio #note { color:#0008; text-shadow:none; }
+  body.studio #brand h1 { text-shadow:none; color:#111; }
+  body.studio #hint { color:#0009; text-shadow:none; }
+  /* Sembunyikan UI per panel */
+  .ui-hidden { display:none !important; }
+  .hidebtn { position:absolute; top:-9px; right:-9px; width:20px; height:20px; padding:0; border-radius:50%; font-size:13px; line-height:18px; text-align:center; letter-spacing:0; pointer-events:auto; opacity:.55; z-index:5; }
+  .hidebtn:hover { opacity:1; background:var(--accent); border-color:var(--accent); }
+  #brand, #modes, #hint, #note { position:fixed; }
+  #uiDock { position:fixed; top:24px; right:20px; z-index:20; }
+  #uiDock > button { padding:8px 12px; }
+  #uiMenu { position:absolute; top:40px; right:0; width:230px; background:var(--panel); border:1px solid var(--line); border-top:2px solid var(--blue); padding:10px; display:none; }
+  #uiMenu.open { display:block; }
+  #uiMenu label { display:flex; gap:8px; align-items:center; font-size:12.5px; padding:5px 4px; cursor:pointer; }
+  #uiMenu .row { display:flex; gap:6px; margin-top:8px; }
+  #uiMenu .row button { flex:1; padding:7px 6px; font-size:10.5px; }
+  #uiMenu small { display:block; color:var(--muted); font-size:10.5px; margin-top:8px; }
+  #manualBar { position:fixed; bottom:170px; left:50%; transform:translateX(-50%); padding:7px 14px; background:#fff6c2; color:#2b240c; border-left:3px solid #e8a800; font-size:12px; font-weight:800; letter-spacing:1px; white-space:nowrap; opacity:0; transition:opacity .25s; pointer-events:none; box-shadow:0 3px 10px #0006; }
+  #driveHud, #driveHint { position:fixed; left:50%; transform:translateX(-50%); display:none; pointer-events:none; }
+  #driveHud { top:84px; padding:6px 18px; background:var(--panel); border-top:2px solid var(--accent); font-size:11px; font-weight:800; letter-spacing:2px; }
+  #driveHud b { font:400 30px "Russo One",sans-serif; font-style:italic; margin-right:6px; }
+  #driveHud i { margin-left:12px; color:var(--warn); font-style:normal; }
+  #driveHint { bottom:170px; font-size:11px; font-weight:800; letter-spacing:2px; color:#000a; white-space:nowrap; }
+  body.studio #driveHint { display:block; }
+  body.studio #hint { display:none; }
+  body.driving #driveHud { display:block; }
+  body.driving #garage, body.driving #presets, body.driving #info { display:none !important; }
+  #note { position:fixed; bottom:4px; left:24px; right:24px; font-size:9px; letter-spacing:1px; color:#ffffff77; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  @media (max-width:1100px) { #presets { grid-template-columns:repeat(2,1fr); } #garage { bottom:300px; } #hint { bottom:290px; } }
+  @media (max-width:800px) { #side, #info, #hint { display:none !important; } #garage { top:auto; height:40%; bottom:12px; width:auto; right:12px; } #presets { display:none; } }
+</style>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<div id="app"></div>
+<div id="brand"><h1 class="display">GARASI <span>MINI 4WD</span></h1><p>BENGKEL RAKIT · LET'S &amp; GO!!</p></div>
+
+<aside id="garage">
+  <div id="status"></div>
+  <div id="slots"></div>
+</aside>
+
+<aside id="side">
+  <div class="who"><span id="sideOwner">RAKITAN SENDIRI</span><span id="sideNum">—</span></div>
+  <h2 class="display" id="sideName">MESIN KUSTOM</h2>
+  <div class="tag" id="sideTag">Rakit sesuai seleramu.</div>
+  <div id="stats"></div>
+  <hr>
+  <div class="btns">
+    <button id="btnExplode">Exploded View</button>
+    <button id="btnNotes" class="on">Catatan Part: Tampil</button>
+    <button id="btnManual">Rakit Manual (per Part)</button>
+    <button id="btnBuild">Rakit dari Awal</button>
+    <button id="btnMotor">Nyalakan Dinamo</button>
+    <button id="btnColor">Ganti Warna Body</button>
+    <button id="btnSpin">Putar Otomatis</button>
+  </div>
+  <div id="pov"></div>
+</aside>
+
+<div id="presets"></div>
+<div id="hint">SERET: PUTAR · KLIK KANAN: GESER · SCROLL: ZOOM · KLIK PART: DETAIL</div>
+<div id="info"><h3 id="infoTitle"></h3><p id="infoText"></p></div>
+<svg id="callouts"></svg>
+<div id="modes"><button data-mode="garasi" class="on">Garasi</button><button data-mode="studio">Studio</button><button data-mode="lintasan">Lintasan</button></div>
+<div id="hud">
+  <div class="hb"><span>LAP</span><b id="hLap">0</b></div>
+  <div class="hb"><span>WAKTU LAP</span><b id="hTime">0.00</b></div>
+  <div class="hb"><span>TERBAIK</span><b id="hBest">—</b></div>
+  <div class="hb"><span>KM/JAM</span><b id="hSpd">0</b></div>
+</div>
+<div id="trackCtl"><button id="btnRace">Mulai Balap</button><button id="btnCam">Kamera: Kejar</button></div>
+<div id="toast"></div>
+<div id="manualBar"></div>
+<div id="uiDock"><button id="btnUi">UI ▾</button><div id="uiMenu"></div></div>
+<div id="driveHud"></div>
+<div id="driveHint">W A S D / PANAH: SETIR · SPASI: REM TANGAN (DRIFT) · V: KAMERA · R: KEMBALI KE MEJA PUTAR</div>
+<div id="note">PROYEK FAN TIDAK RESMI · DATA PART DISEDERHANAKAN · MODEL 3D: SASIS SUPER-1 OLEH REYZA HADI (PRINTABLES, CC BY-NC 4.0) · BODY SAYAP OLEH CKW8217 (THINGIVERSE, CC BY-SA) · BODY CYCLONE MAGNUM & DINAMO FA-130 DARI PENGGUNA GRABCAD (NON-KOMERSIAL)</div>
+<script src="models/web/super1.js"></script>
+<script src="models/web/body-aero.js"></script>
+<script src="models/web/body-magnum.js"></script>
+<script src="models/web/fa130.js"></script>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+// Model 3D asli (STL -> Blender -> GLB Draco -> base64 di models/web/*.js)
+const MODEL_GEO = {};
+async function loadModels() {
+  const draco = new DRACOLoader().setDecoderPath('https://www.gstatic.com/draco/versioned/decoders/1.5.6/');
+  const loader = new GLTFLoader().setDRACOLoader(draco);
+  for (const [key, b64] of Object.entries(window.MODELS || {})) {
+    const bin = Uint8Array.from(atob(b64), ch => ch.charCodeAt(0));
+    const gltf = await loader.parseAsync(bin.buffer, '');
+    const geos = {};
+    gltf.scene.updateMatrixWorld(true);
+    gltf.scene.traverse(o => {
+      if (!o.isMesh) return;
+      const geo = o.geometry.clone().applyMatrix4(o.matrixWorld);
+      geo.computeBoundingBox();
+      geos[o.name] = geo;
+    });
+    MODEL_GEO[key] = geos;
+  }
+}
+
+// =====================================================================
+// DATA PART (disederhanakan dari part Mini 4WD asli)
+// =====================================================================
+const CATALOG = {
+  chassis: { label:'Sasis', options:[
+    { id:'super1', name:'Super-1 (model 3D detail)', motor:'rear', shaft:'single', stab:6, weight:23, color:0x2a2d33, model:'super1', desc:'Model 3D asli hasil ukur jangka sorong (8 part terpisah). Sasis klasik dinamo belakang. Model: reyza hadi, CC BY-NC 4.0.' },
+    { id:'super2', name:'Super-II', motor:'rear', shaft:'single', stab:6, weight:24, color:0x23262c, desc:'Sasis klasik dinamo belakang. Kokoh dan mudah dirakit, cocok untuk pemula.' },
+    { id:'ar', name:'AR Chassis', motor:'rear', shaft:'single', stab:7, weight:23, color:0x2f3a4c, desc:'Dinamo belakang dengan lubang aerodinamis. Ganti baterai lewat bawah, praktis.' },
+    { id:'vz', name:'VZ Chassis', motor:'rear', shaft:'single', stab:7, weight:21, color:0x121417, desc:'Penerus AR: lebih ringan dan lebih kaku. Pilihan populer untuk balap.' },
+    { id:'fma', name:'FM-A Chassis', motor:'front', shaft:'single', stab:7, weight:24, color:0xdedede, desc:'Dinamo di DEPAN. Bobot depan berat sehingga stabil saat melompat.' },
+    { id:'ma', name:'MA Chassis', motor:'mid', shaft:'double', stab:8, weight:25, color:0x4b5160, desc:'Dinamo di tengah (double shaft). Tenaga tersalur ke depan dan belakang dengan seimbang.' },
+    { id:'ms', name:'MS Chassis', motor:'mid', shaft:'double', stab:8, weight:26, color:0x1b2942, desc:'Sasis modular 3 bagian dengan dinamo tengah. Sangat kaku dan stabil.' },
+  ]},
+  motor: { label:'Dinamo', options:[
+    { id:'ttz', name:'Torque-Tuned 2', shaft:'single', spd:5, tq:9, cap:0x2e7d32, desc:'Single shaft. Torsi besar, top speed sedang. Bagus untuk lintasan menanjak.' },
+    { id:'atz', name:'Atomic-Tuned 2', shaft:'single', spd:6, tq:8, cap:0x1565c0, desc:'Single shaft. Seimbang antara kecepatan dan torsi.' },
+    { id:'ld',  name:'Light-Dash', shaft:'single', spd:7, tq:7, cap:0x9e9e9e, desc:'Single shaft. Ringan dan responsif.' },
+    { id:'hd3', name:'Hyper-Dash 3', shaft:'single', spd:8, tq:7, cap:0xc62828, desc:'Single shaft. Dinamo balap yang cepat dan tahan lama.' },
+    { id:'sd',  name:'Sprint-Dash', shaft:'single', spd:10, tq:5, cap:0xf9a825, desc:'Single shaft. Sangat kencang, boros baterai dan cepat panas.' },
+    { id:'ttp', name:'Torque-Tuned 2 PRO', shaft:'double', spd:5, tq:9, cap:0x2e7d32, desc:'Double shaft untuk sasis dinamo tengah. Torsi besar.' },
+    { id:'atp', name:'Atomic-Tuned 2 PRO', shaft:'double', spd:6, tq:8, cap:0x1565c0, desc:'Double shaft. Seimbang.' },
+    { id:'ldp', name:'Light-Dash PRO', shaft:'double', spd:7, tq:7, cap:0x9e9e9e, desc:'Double shaft. Ringan dan responsif.' },
+    { id:'hdp', name:'Hyper-Dash PRO', shaft:'double', spd:8, tq:7, cap:0xc62828, desc:'Double shaft. Dinamo balap serbaguna.' },
+    { id:'mdp', name:'Mach-Dash PRO', shaft:'double', spd:9, tq:6, cap:0xf9a825, desc:'Double shaft. Salah satu dinamo PRO tercepat.' },
+  ]},
+  gear: { label:'Rasio Gear', options:[
+    { id:'g35', name:'3.5 : 1 (Hyper Speed)', ratio:3.5, fits:['single','double'], desc:'Paling cepat, tenaga paling kecil.' },
+    { id:'g37', name:'3.7 : 1 (Super Speed)', ratio:3.7, fits:['single','double'], desc:'Cepat, tenaga sedikit lebih besar.' },
+    { id:'g40', name:'4 : 1 (Standar)', ratio:4.0, fits:['single','double'], desc:'Rasio bawaan. Seimbang.' },
+    { id:'g42', name:'4.2 : 1', ratio:4.2, fits:['single'], desc:'Lebih bertenaga. Hanya ada untuk sasis single shaft.' },
+    { id:'g50', name:'5 : 1 (Torsi)', ratio:5.0, fits:['single'], desc:'Paling bertenaga, paling lambat. Hanya untuk sasis single shaft.' },
+  ]},
+  wheel: { label:'Roda & Ban', options:[
+    { id:'small', name:'Diameter Kecil (26 mm)', r:1.75, rim:1.12, tw:1.45, speed:1.0, stab:1, weight:10, desc:'Akselerasi cepat dan titik berat rendah. Paling umum dipakai balap.' },
+    { id:'low', name:'Low-Profile (24 mm)', r:1.6, rim:1.22, tw:1.75, speed:0.95, stab:2, weight:9, desc:'Sangat rendah dan stabil, top speed sedikit turun.' },
+    { id:'large', name:'Diameter Besar (31 mm)', r:2.1, rim:1.45, tw:1.45, speed:1.12, stab:-1, weight:13, desc:'Top speed tinggi, tapi titik berat naik dan kurang stabil di tikungan.' },
+  ]},
+  roller: { label:'Roller', options:[
+    { id:'p13', name:'Plastik 13 mm', r:0.65, stab:0, weight:2, metal:false, desc:'Roller bawaan. Ringan tapi cepat aus.' },
+    { id:'a9',  name:'Aluminium 9 mm', r:0.45, stab:1, weight:3, metal:true, desc:'Kecil dan ringan, berbantalan bola (ball bearing).' },
+    { id:'a13', name:'Aluminium 13 mm', r:0.65, stab:2, weight:4, metal:true, desc:'Berbantalan bola. Pilihan standar balap.' },
+    { id:'a19', name:'Aluminium 19 mm', r:0.95, stab:3, weight:6, metal:true, needsPlate:true, desc:'Besar dan mantap di tikungan, tapi butuh plate lebar (FRP atau karbon).' },
+  ]},
+  plate: { label:'Stay / Plate Bumper', options:[
+    { id:'stock', name:'Stay Bawaan (plastik)', stab:0, weight:0, desc:'Bumper plastik bawaan sasis. Tidak bisa menahan roller 19 mm.' },
+    { id:'frp', name:'Plate FRP', stab:1, weight:3, desc:'Plat fiberglass yang kuat dan lebar. Bisa dipasang roller besar.' },
+    { id:'carbon', name:'Plate Karbon', stab:2, weight:2, desc:'Lebih kaku dan ringan dari FRP. Upgrade terbaik untuk bumper.' },
+  ]},
+  battery: { label:'Baterai', options:[
+    { id:'alk', name:'Alkaline AA', boost:1.0, weight:46, desc:'Baterai biasa. Tenaga turun cukup cepat.' },
+    { id:'nimh', name:'Ni-MH isi ulang (mis. Neo Champ)', boost:1.08, weight:50, desc:'Tegangan stabil, tenaga tetap kencang lebih lama.' },
+  ]},
+  body: { label:'Body', options:[
+    { id:'classic', name:'Body Klasik Bersayap', mounts:['rear'], low:false, wing:true, fenders:true, weight:12,
+      profile:[[-7.8,2.2],[8.2,2.2],[8.6,2.8],[5.6,3.5],[2.6,4.2],[1.2,5.0],[-2.6,5.2],[-5.2,4.4],[-7.8,4.2]], canopy:[-0.6, 5.0],
+      desc:'Gaya klasik dengan sayap belakang. Dudukannya untuk sasis dinamo belakang.' },
+    { id:'magnum', name:'Body Cyclone Magnum (model 3D detail)', mounts:['rear'], low:false, wing:true, fenders:true, weight:13,
+      // Hasil konversi IGES -> Blender; titik asal di tengah kedua as, sudah menghadap depan (+x)
+      model:'bodyMagnum', axleOrigin:true, offset:[0, 0.1], scale:[1, 1, 1.12], rotY:0, livery:true,
+      profile:[[-7.8,2.1],[8.6,2.1],[8.9,2.8],[4.5,3.4],[1.0,4.5],[-3.0,4.6],[-7.8,4.6]], canopy:[-0.6, 4.5],
+      desc:'Body klasik bergaya Magnum: moncong runcing, spatbor depan lebar, sayap belakang tinggi. Dirancang untuk sasis Super-1/Super-II. Model: pengguna GrabCAD (pribadi/non-komersial).' },
+    { id:'wingModelS1', name:'Body Sayap Lebar · adaptasi Super-1', mounts:['rear'], low:false, wing:true, fenders:true, weight:14,
+      // Dinaikkan dan diperbesar agar gear cover & dudukan dinamo Super-1 tidak menembus (diukur dengan tools/body_clearance.py)
+      model:'bodyAero', offset:[-0.15, 1.3], scale:[1.05, 1.28, 1.12], rotY:Math.PI, livery:true,
+      profile:[[-7.8,2.1],[8.3,2.1],[8.7,2.9],[4.0,3.6],[1.0,4.7],[-3.0,4.8],[-7.8,4.3]], canopy:[-1.0, 4.7],
+      desc:'Turunan dari body model ckw8217: dudukannya dipindah agar pas di sasis dinamo belakang (Super-1, Super-II, AR, VZ) dan diberi livery stiker. Lisensi turunan tetap CC BY-SA.' },
+    { id:'wingModel', name:'Body Sayap Lebar (model 3D detail)', mounts:['mid'], low:false, wing:true, fenders:true, weight:14,
+      model:'bodyAero', offset:[0, 0.35], rotY:Math.PI, livery:true, // sayap model ada di +x, jadi diputar agar menghadap belakang
+      profile:[[-7.8,2.1],[8.3,2.1],[8.7,2.9],[4.0,3.6],[1.0,4.7],[-3.0,4.8],[-7.8,4.3]], canopy:[-1.0, 4.7],
+      desc:'Model 3D asli dengan spatbor lebar dan sayap. Dirancang untuk sasis MS (dinamo tengah). Model: ckw8217, CC BY-SA.' },
+    { id:'aero', name:'Body Aero Rendah', mounts:['rear','mid'], low:true, wing:false, fenders:false, weight:10,
+      profile:[[-7.8,2.1],[8.3,2.1],[8.7,2.6],[3.4,3.15],[0.6,3.9],[-2.8,4.1],[-6.0,3.5],[-7.8,3.3]], canopy:[-1.1, 3.95],
+      desc:'Sangat rendah dan aerodinamis. Dudukan universal untuk sasis belakang dan tengah.' },
+    { id:'frame', name:'Body Frame Tengah', mounts:['mid'], low:false, wing:true, fenders:true, weight:13,
+      profile:[[-7.8,2.2],[8.1,2.2],[8.4,3.3],[4.2,3.8],[1.6,4.9],[-3.8,5.1],[-7.8,4.4]], canopy:[-1.0, 4.95],
+      desc:'Desain kotak bertenaga. Dudukannya khusus sasis dinamo tengah (MA/MS).' },
+    { id:'nose', name:'Body Moncong Panjang', mounts:['front'], low:false, wing:true, fenders:true, weight:12,
+      profile:[[-7.8,2.2],[8.2,2.2],[8.3,3.4],[5.2,4.0],[2.2,4.9],[-3.0,4.8],[-7.8,3.4]], canopy:[-0.5, 4.85],
+      desc:'Ruang depan lebar untuk dinamo depan. Khusus sasis FM.' },
+  ]},
+};
+const SLOT_KEYS = Object.keys(CATALOG);
+const opt = (slot, id) => CATALOG[slot].options.find(o => o.id === id);
+const pick = cfg => Object.fromEntries(SLOT_KEYS.map(k => [k, opt(k, cfg[k])]));
+const MOTOR_POS = { rear:'belakang', front:'depan', mid:'tengah' };
+
+const RULES = [
+  { slots:['chassis','motor'], level:'error', test:({chassis:c, motor:m}) => m.shaft !== c.shaft &&
+    `${m.name} adalah dinamo ${m.shaft === 'single' ? 'single shaft' : 'double shaft (PRO)'}, sedangkan ${c.name} butuh dinamo ${c.shaft === 'single' ? 'single shaft' : 'PRO double shaft'}.` },
+  { slots:['chassis','gear'], level:'error', test:({chassis:c, gear:g}) => !g.fits.includes(c.shaft) &&
+    `Gear ${g.ratio}:1 tidak tersedia untuk sasis double shaft seperti ${c.name}.` },
+  { slots:['roller','plate'], level:'error', test:({roller:r, plate:p}) => r.needsPlate && p.id === 'stock' &&
+    'Roller 19 mm tidak muat di stay plastik bawaan. Pasang Plate FRP atau Karbon.' },
+  { slots:['body','chassis'], level:'error', test:({body:b, chassis:c}) => !b.mounts.includes(c.motor) &&
+    `${b.name} tidak punya dudukan untuk sasis dinamo ${MOTOR_POS[c.motor]} (${c.name}).` },
+  { slots:['wheel','body'], level:'warn', test:({wheel:w, body:b}) => w.id === 'large' && b.low &&
+    'Roda besar bisa menggesek body rendah ini. Biasanya bagian body perlu dipotong.' },
+  { slots:['motor','gear'], level:'warn', test:({motor:m, gear:g}) => m.spd >= 9 && g.ratio <= 3.7 &&
+    'Kombinasi sangat kencang: mobil mudah terlempar keluar di tikungan atau tanjakan.' },
+  { slots:['motor','battery'], level:'warn', test:({motor:m, battery:b}) => m.spd >= 9 && b.id === 'alk' &&
+    'Dinamo sekencang ini cepat menguras alkaline. Sebaiknya pakai Ni-MH.' },
+  { slots:['motor','gear'], level:'warn', test:({motor:m, gear:g}) => m.tq >= 9 && g.ratio >= 5 &&
+    'Tenaga besar tapi top speed sangat rendah. Cocok untuk tanjakan, lambat di lintasan lurus.' },
+];
+function check(cfg) {
+  const p = pick(cfg), out = [];
+  for (const r of RULES) { const msg = r.test(p); if (msg) out.push({ ...r, msg }); }
+  return out;
+}
+function optionProblem(slot, id, cfg) {
+  const p = pick({ ...cfg, [slot]: id });
+  for (const r of RULES) if (r.level === 'error' && r.slots.includes(slot)) { const m = r.test(p); if (m) return m; }
+  return null;
+}
+function stats(cfg) {
+  const p = pick(cfg);
+  const speed = p.motor.spd * 10 * (4.0 / p.gear.ratio) * p.wheel.speed * p.battery.boost;
+  const accel = p.motor.tq * 10 * (p.gear.ratio / 4.0) * (1.75 / p.wheel.r) * p.battery.boost;
+  const corner = (p.chassis.stab + p.wheel.stab + p.roller.stab + p.plate.stab) * 7 + 10;
+  const weight = SLOT_KEYS.reduce((s, k) => s + (p[k].weight || 0), 0) + 24;
+  const stable = Math.max(10, 100 - Math.max(0, speed - 60) * 0.8 - (p.wheel.id === 'large' ? 12 : 0) + p.plate.stab * 4);
+  const c = v => Math.round(Math.min(100, v));
+  return { speed:c(speed), accel:c(accel), corner:c(corner), stable:c(stable), weight };
+}
+
+// Mesin jadi (nama orisinal)
+const PRESETS = [
+  { name:'KILAT BIRU', owner:'TIM BADAI', tag:'Lurus dan nekat. Lahir untuk trek panjang.', style:'TENAGA / LOMPAT',
+    cfg:{ chassis:'super1', motor:'hd3', gear:'g37', wheel:'small', roller:'a13', plate:'frp', battery:'nimh', body:'magnum' },
+    liv:{ p:0x1d4fd8, s:0xffffff, a:0xff2d2d, rim:0x8ee000, num:'01' } },
+  { name:'BARA MERAH', owner:'TIM BADAI', tag:'Cengkeraman kuat di setiap tikungan.', style:'GRIP / KONTROL',
+    cfg:{ chassis:'fma', motor:'atz', gear:'g40', wheel:'small', roller:'a13', plate:'carbon', battery:'nimh', body:'nose' },
+    liv:{ p:0xd81e1e, s:0xffffff, a:0xffc400, rim:0xffd400, num:'02' } },
+  { name:'NAGA HITAM', owner:'TIM BAYANGAN', tag:'Tangguh, tidak kenal takut.', style:'TANGGUH / BERANI',
+    cfg:{ chassis:'ms', motor:'mdp', gear:'g37', wheel:'low', roller:'a19', plate:'carbon', battery:'nimh', body:'wingModel' },
+    liv:{ p:0x16171b, s:0xff7a00, a:0xffd000, rim:0xff7a00, num:'03' } },
+  { name:'PUSARAN ANGIN', owner:'TIM BADAI', tag:'Lincah dan presisi di trek berkelok.', style:'LINCAH / PRESISI',
+    cfg:{ chassis:'vz', motor:'ld', gear:'g35', wheel:'small', roller:'a9', plate:'carbon', battery:'nimh', body:'aero' },
+    liv:{ p:0x1438b8, s:0xffd400, a:0xffffff, rim:0xffffff, num:'04' } },
+];
+
+// =====================================================================
+// SCENE: meja bengkel
+// =====================================================================
+const renderer = new THREE.WebGLRenderer({ antialias:true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(innerWidth, innerHeight);
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.toneMappingExposure = 1.05;
+document.getElementById('app').appendChild(renderer.domElement);
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x2a2219);
+scene.environment = new THREE.PMREMGenerator(renderer).fromScene(new RoomEnvironment(), 0.04).texture;
+scene.fog = new THREE.Fog(0x2a2219, 45, 110);
+
+const camera = new THREE.PerspectiveCamera(36, innerWidth / innerHeight, 0.1, 300);
+camera.position.set(25, 15, 29);
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 3, 0);
+controls.enableDamping = true;
+controls.autoRotateSpeed = 1.0;
+controls.minDistance = 7;
+controls.maxDistance = 70;
+
+const key = new THREE.DirectionalLight(0xffe6c8, 2.6);
+key.position.set(14, 26, 12);
+key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048);
+key.shadow.radius = 6;
+key.shadow.bias = -0.0004;
+Object.assign(key.shadow.camera, { left:-26, right:26, top:26, bottom:-26 });
+const rim = new THREE.DirectionalLight(0x9fc4ff, 1.1);
+rim.position.set(-18, 12, -16);
+const under = new THREE.DirectionalLight(0xffffff, 0.5);
+under.position.set(0, -20, 0);
+scene.add(key, rim, under, new THREE.HemisphereLight(0xffeedd, 0x3a2a1c, 0.5));
+
+function canvasTex(w, h, draw, repeat) {
+  const c = document.createElement('canvas');
+  c.width = w; c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const t = new THREE.CanvasTexture(c);
+  t.colorSpace = THREE.SRGBColorSpace;
+  t.anisotropy = 8;
+  if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(...repeat); }
+  return t;
+}
+
+// Meja kayu
+const woodTex = canvasTex(512, 512, (g, w, h) => {
+  g.fillStyle = '#6b4a2e'; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 260; i++) {
+    g.strokeStyle = `rgba(${40 + Math.random() * 40},${25 + Math.random() * 20},10,${0.15 + Math.random() * 0.25})`;
+    g.lineWidth = 1 + Math.random() * 3;
+    const y = Math.random() * h;
+    g.beginPath(); g.moveTo(0, y);
+    for (let x = 0; x <= w; x += 32) g.lineTo(x, y + Math.sin(x * 0.02 + i) * 4);
+    g.stroke();
+  }
+  for (let y = 0; y < h; y += 128) { g.fillStyle = '#3a2717'; g.fillRect(0, y, w, 3); }
+}, [6, 6]);
+const table = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), new THREE.MeshStandardMaterial({ map:woodTex, roughness:0.75 }));
+table.rotation.x = -Math.PI / 2;
+table.receiveShadow = true;
+scene.add(table);
+
+// Cutting mat
+const matTex = canvasTex(2048, 1366, (g, w, h) => {
+  g.fillStyle = '#2f5d55'; g.fillRect(0, 0, w, h);
+  const s = w / 60;
+  g.strokeStyle = 'rgba(220,255,240,.18)'; g.lineWidth = 1;
+  for (let i = 0; i <= 60; i++) { g.beginPath(); g.moveTo(i * s, 0); g.lineTo(i * s, h); g.stroke(); }
+  for (let i = 0; i <= 40; i++) { g.beginPath(); g.moveTo(0, i * s); g.lineTo(w, i * s); g.stroke(); }
+  g.strokeStyle = 'rgba(230,255,245,.45)'; g.lineWidth = 2.5;
+  for (let i = 0; i <= 60; i += 5) { g.beginPath(); g.moveTo(i * s, 0); g.lineTo(i * s, h); g.stroke(); }
+  for (let i = 0; i <= 40; i += 5) { g.beginPath(); g.moveTo(0, i * s); g.lineTo(w, i * s); g.stroke(); }
+  g.strokeStyle = 'rgba(255,255,255,.25)'; g.lineWidth = 2;
+  for (const a of [0.52, 0.79, 1.05]) { g.beginPath(); g.moveTo(w * 0.1, h); g.lineTo(w * 0.1 + Math.cos(a) * w, h - Math.sin(a) * w); g.stroke(); }
+  g.fillStyle = 'rgba(235,255,245,.7)'; g.font = 'bold 20px Inter, sans-serif';
+  for (let i = 5; i < 60; i += 5) { g.fillText(String(i), i * s + 4, 22); g.fillText(String(i), i * s + 4, h - 8); }
+  for (let i = 5; i < 40; i += 5) g.fillText(String(i), 6, i * s - 4);
+  g.font = 'bold italic 46px Inter, sans-serif'; g.fillStyle = 'rgba(235,255,245,.35)';
+  g.fillText('SELF-HEALING CUTTING MAT · A2', w - 820, h - 40);
+});
+const cutMat = new THREE.Mesh(new RoundedBoxGeometry(60, 0.3, 40, 2, 0.15), [
+  null, null, new THREE.MeshStandardMaterial({ map:matTex, roughness:0.85 }), null, null, null,
+].map(m => m || new THREE.MeshStandardMaterial({ color:0x24473f, roughness:0.85 })));
+cutMat.position.y = 0.15;
+cutMat.receiveShadow = true;
+scene.add(cutMat);
+const GROUND = 0.3;
+// (alat meja, studio, dan lintasan dibangun di bawah, setelah fungsi pembuat geometri)
+
+// =====================================================================
+// PEMBUAT GEOMETRI
+// =====================================================================
+const mat = (color, o = {}) => new THREE.MeshStandardMaterial({ color, roughness:0.45, metalness:0.1, ...o });
+const metal = (color = 0xcfd4dc, rough = 0.22) => mat(color, { metalness:0.92, roughness:rough });
+function mesh(geo, material, pos = [0,0,0], rot = [0,0,0]) {
+  const m = new THREE.Mesh(geo, material);
+  m.position.set(...pos);
+  m.rotation.set(...rot);
+  m.castShadow = m.receiveShadow = true;
+  return m;
+}
+const rbox = (w, h, d, r, material, pos, rot) => mesh(new RoundedBoxGeometry(w, h, d, 3, Math.min(r, w / 2, h / 2, d / 2)), material, pos, rot);
+const ROT_Z = [Math.PI / 2, 0, 0];
+const ROT_X = [0, 0, Math.PI / 2];
+
+function roundRect(path, x, y, w, h, r) {
+  path.moveTo(x + r, y);
+  path.lineTo(x + w - r, y); path.quadraticCurveTo(x + w, y, x + w, y + r);
+  path.lineTo(x + w, y + h - r); path.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+  path.lineTo(x + r, y + h); path.quadraticCurveTo(x, y + h, x, y + h - r);
+  path.lineTo(x, y + r); path.quadraticCurveTo(x, y, x + r, y);
+  return path;
+}
+function gearGeometry(teeth, rOut, rIn, depth) {
+  const s = new THREE.Shape();
+  const step = Math.PI * 2 / teeth;
+  for (let i = 0; i < teeth; i++) {
+    const a = i * step;
+    [[rIn, a], [rOut, a + step * 0.22], [rOut, a + step * 0.48], [rIn, a + step * 0.7]]
+      .forEach(([r, t], k) => (i === 0 && k === 0 ? s.moveTo : s.lineTo).call(s, Math.cos(t) * r, Math.sin(t) * r));
+  }
+  s.closePath();
+  const hole = new THREE.Path();
+  hole.absarc(0, 0, rIn * 0.22, 0, Math.PI * 2, true);
+  s.holes.push(hole);
+  if (rIn > 0.7) for (let i = 0; i < 4; i++) {
+    const h2 = new THREE.Path();
+    const a = i * Math.PI / 2 + 0.4;
+    h2.absarc(Math.cos(a) * rIn * 0.55, Math.sin(a) * rIn * 0.55, rIn * 0.18, 0, Math.PI * 2, true);
+    s.holes.push(h2);
+  }
+  const g = new THREE.ExtrudeGeometry(s, { depth, bevelEnabled:true, bevelThickness:0.03, bevelSize:0.02, bevelSegments:1, curveSegments:8 });
+  g.translate(0, 0, -depth / 2);
+  return g;
+}
+function screw(pos) {
+  const g = new THREE.Group();
+  g.position.set(...pos);
+  g.add(mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.1, 16), metal(0xb8bec8)));
+  g.add(mesh(new THREE.BoxGeometry(0.28, 0.04, 0.05), mat(0x333333), [0, 0.06, 0]));
+  g.add(mesh(new THREE.BoxGeometry(0.05, 0.04, 0.28), mat(0x333333), [0, 0.06, 0]));
+  return g;
+}
+function lathe(points, segs = 48) {
+  return new THREE.LatheGeometry(points.map(([x, y]) => new THREE.Vector2(x, y)), segs);
+}
+
+// Label dinamo dan baterai digambar di kanvas
+const texCache = {};
+function motorLabel(m) {
+  return texCache['m' + m.id] ??= canvasTex(512, 160, (g, w, h) => {
+    g.fillStyle = '#16181c'; g.fillRect(0, 0, w, h);
+    const cap = '#' + m.cap.toString(16).padStart(6, '0');
+    g.fillStyle = cap; g.fillRect(0, 0, w, 22); g.fillRect(0, h - 22, w, 22);
+    g.fillStyle = '#fff'; g.font = 'italic 900 44px Inter, sans-serif';
+    g.fillText(m.name.toUpperCase(), 18, 92);
+    g.font = '600 20px Inter, sans-serif'; g.fillStyle = '#bbb';
+    g.fillText(m.shaft === 'double' ? 'DOUBLE SHAFT · MINI 4WD' : 'SINGLE SHAFT · MINI 4WD', 20, 124);
+  });
+}
+function batteryLabel(id) {
+  return texCache['b' + id] ??= canvasTex(512, 160, (g, w, h) => {
+    const nimh = id === 'nimh';
+    const grd = g.createLinearGradient(0, 0, w, 0);
+    grd.addColorStop(0, nimh ? '#0e8a5a' : '#1a3f9e'); grd.addColorStop(1, nimh ? '#18c483' : '#2e6fe0');
+    g.fillStyle = grd; g.fillRect(0, 0, w, h);
+    g.fillStyle = nimh ? '#111' : '#e0b53a'; g.fillRect(w - 120, 0, 120, h);
+    g.fillStyle = '#fff'; g.font = 'italic 900 48px Inter, sans-serif';
+    g.fillText(nimh ? 'Ni-MH' : 'ALKALINE', 24, 80);
+    g.font = '700 26px Inter, sans-serif'; g.fillText(nimh ? '1.2V  1900mAh' : '1.5V  AA', 26, 120);
+  });
+}
+// Stiker livery body
+function liveryTex(profile, liv, presetNum) {
+  const hex = c => '#' + c.toString(16).padStart(6, '0');
+  return canvasTex(1024, 300, (g, w, h) => {
+    const X = x => (x + 8.6) / 17.2 * w, Y = y => (6.0 - y) / 4.2 * h;
+    g.beginPath();
+    profile.forEach(([x, y], i) => i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)));
+    g.closePath();
+    g.clip();
+    // Petir
+    g.fillStyle = hex(liv.s);
+    g.beginPath();
+    [[-7.5, 3.75], [-1.5, 4.25], [-2.4, 3.8], [5.5, 3.6], [0.4, 3.2], [1.1, 3.55], [-7.5, 3.2]].forEach(([x, y], i) => i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)));
+    g.fill();
+    g.fillStyle = hex(liv.a);
+    g.beginPath();
+    [[-7.5, 3.55], [-2.0, 3.9], [-2.6, 3.65], [3.8, 3.45], [0.2, 3.3], [-7.5, 3.35]].forEach(([x, y], i) => i ? g.lineTo(X(x), Y(y)) : g.moveTo(X(x), Y(y)));
+    g.fill();
+    // Garis bawah
+    g.fillStyle = '#111'; g.fillRect(0, Y(2.42), w, Y(2.2) - Y(2.42));
+    // Nomor
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(X(-4.6), Y(3.75), 26, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#111'; g.font = 'italic 900 34px Inter, sans-serif'; g.textAlign = 'center';
+    g.fillText(presetNum, X(-4.6), Y(3.75) + 12);
+    g.font = 'italic 900 22px Inter, sans-serif'; g.fillStyle = hex(liv.s);
+    g.fillText('MINI 4WD', X(4.6), Y(2.95));
+  });
+}
+
+// Body model tidak punya UV: buat UV dengan proyeksi dari samping (u = panjang, v = tinggi)
+const uvCache = {};
+function sideUV(key, geo) {
+  if (uvCache[key]) return uvCache[key];
+  const g = geo.clone(), pos = g.attributes.position, nrm = g.attributes.normal, bb = g.boundingBox;
+  const uv = new Float32Array(pos.count * 2);
+  for (let i = 0; i < pos.count; i++) {
+    uv[i * 2] = (pos.getX(i) - bb.min.x) / (bb.max.x - bb.min.x);
+    // Permukaan yang menghadap atas/bawah memakai area polos (warna utama), stiker hanya di sisi
+    uv[i * 2 + 1] = nrm && Math.abs(nrm.getY(i)) > 0.6 ? 0.97 : (pos.getY(i) - bb.min.y) / (bb.max.y - bb.min.y);
+  }
+  g.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+  return uvCache[key] = g;
+}
+// Livery untuk body model. u=0 adalah moncong (body diputar 180°), v=0 adalah bawah body
+function modelLiveryTex(liv) {
+  const hex = c => '#' + c.toString(16).padStart(6, '0');
+  return texCache[`ml${liv.p}-${liv.s}-${liv.a}-${liv.num}`] ??= canvasTex(1024, 256, (g, w, h) => {
+    const X = u => u * w, Y = v => (1 - v) * h;
+    g.fillStyle = hex(liv.p); g.fillRect(0, 0, w, h);
+    g.fillStyle = '#111'; g.fillRect(0, Y(0.16), w, h);
+    const poly = (pts, col) => { g.fillStyle = col; g.beginPath(); pts.forEach(([u, v], i) => i ? g.lineTo(X(u), Y(v)) : g.moveTo(X(u), Y(v))); g.fill(); };
+    // Petir sepanjang sisi body
+    poly([[0.02, 0.5], [0.42, 0.62], [0.36, 0.5], [0.97, 0.56], [0.97, 0.44], [0.46, 0.36], [0.52, 0.48], [0.02, 0.36]], hex(liv.s));
+    poly([[0.02, 0.46], [0.4, 0.55], [0.35, 0.47], [0.9, 0.5], [0.45, 0.41], [0.5, 0.45], [0.02, 0.4]], hex(liv.a));
+    // Nomor balap dan tulisan
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(X(0.66), Y(0.66), 26, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#111'; g.font = 'italic 900 34px Inter, sans-serif'; g.textAlign = 'center';
+    g.fillText(liv.num, X(0.66), Y(0.66) + 12);
+    g.fillStyle = '#fff'; g.font = 'italic 900 26px Inter, sans-serif';
+    g.fillText('MINI 4WD', X(0.24), Y(0.22));
+  });
+}
+
+// =====================================================================
+// ALAT-ALAT DI MEJA KERJA
+// =====================================================================
+const tools = new THREE.Group();
+scene.add(tools);
+function paintCan(color, code, pos) {
+  const g = new THREE.Group();
+  const hex = '#' + color.toString(16).padStart(6, '0');
+  const lab = canvasTex(512, 160, (c, w, h) => {
+    c.fillStyle = '#f4f1ea'; c.fillRect(0, 0, w, h);
+    c.fillStyle = hex; c.fillRect(0, 0, w, 44); c.fillRect(0, h - 16, w, 16);
+    c.fillStyle = '#1b2a4a'; c.font = 'italic 900 42px Inter, sans-serif'; c.fillText('ENAMEL', 20, 98);
+    c.font = '700 21px Inter, sans-serif'; c.fillText(`No.${code} · 14 ml · GLOSS`, 22, 130);
+    c.fillStyle = hex; c.beginPath(); c.arc(w - 74, 96, 34, 0, Math.PI * 2); c.fill();
+    c.strokeStyle = '#0003'; c.lineWidth = 3; c.stroke();
+  });
+  g.add(mesh(new THREE.CylinderGeometry(1.72, 1.72, 2.2, 48, 1, true), new THREE.MeshStandardMaterial({ map:lab, roughness:0.45 }), [0, 1.15, 0]));
+  g.add(mesh(new THREE.CylinderGeometry(1.7, 1.7, 2.3, 48), metal(0xb9bec6, 0.35), [0, 1.15, 0]));
+  g.add(mesh(new THREE.CylinderGeometry(1.76, 1.76, 0.16, 48), metal(0xc9ced6, 0.3), [0, 2.33, 0]));
+  g.add(mesh(new THREE.TorusGeometry(1.45, 0.08, 8, 48), mat(color, { roughness:0.15 }), [0, 2.42, 0], [Math.PI / 2, 0, 0]));
+  g.add(mesh(new THREE.TorusGeometry(1.7, 0.06, 6, 48), metal(0xaab0b8, 0.3), [0, 0.05, 0], [Math.PI / 2, 0, 0]));
+  g.position.set(...pos);
+  g.rotation.y = pos[0] * 1.7;
+  tools.add(g);
+}
+[[0xd32f2f, 3, [37, 0, -15]], [0x1e5bd6, 14, [40.8, 0, -11.6]], [0xf2c200, 24, [36.6, 0, -9.8]], [0x1a1a1a, 33, [41, 0, -17.5]],
+ [0xf5f5f5, 22, [44.2, 0, -14]], [0x1f8a4c, 26, [-37, 0, 15]], [0x2a7de1, 8, [-40.5, 0, 18]]].forEach(a => paintCan(...a));
+
+{ // Obeng
+  const g = new THREE.Group();
+  g.add(mesh(lathe([[0, 0], [0.85, 0], [0.95, 0.4], [0.95, 3.6], [0.8, 4.4], [0.55, 5.0], [0.45, 5.4], [0, 5.5]], 32), mat(0x161616, { roughness:0.6 })));
+  for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; g.add(rbox(0.22, 3.0, 0.22, 0.08, mat(0xd32f2f, { roughness:0.4 }), [Math.cos(a) * 0.9, 2.0, Math.sin(a) * 0.9])); }
+  g.add(mesh(new THREE.CylinderGeometry(0.22, 0.22, 7, 16), metal(), [0, 9, 0]));
+  g.add(mesh(new THREE.BoxGeometry(0.5, 0.7, 0.08), metal(0x9aa0aa), [0, 12.8, 0]));
+  g.rotation.set(0, 0.5, -Math.PI / 2);
+  g.position.set(-27, 1.25, 12);
+  tools.add(g);
+}
+{ // Cutter
+  const g = new THREE.Group();
+  g.add(rbox(13, 1.1, 2.6, 0.5, mat(0xff6d00, { roughness:0.35 }), [0, 0.55, 0]));
+  g.add(rbox(8, 0.3, 1.5, 0.15, mat(0x222222, { roughness:0.85 }), [-1.5, 1.1, 0]));
+  g.add(rbox(1.4, 0.5, 1.0, 0.2, mat(0x333333), [2.6, 1.25, 0]));
+  const blade = new THREE.Shape();
+  blade.moveTo(0, -0.9); blade.lineTo(5, -0.9); blade.lineTo(6.3, 0.9); blade.lineTo(0, 0.9); blade.closePath();
+  const bg = new THREE.ExtrudeGeometry(blade, { depth:0.06, bevelEnabled:false });
+  bg.rotateX(-Math.PI / 2);
+  g.add(mesh(bg, metal(0xd8dde4, 0.12), [6.3, 0.55, 0]));
+  for (let i = 1; i < 6; i++) g.add(mesh(new THREE.BoxGeometry(0.04, 0.08, 1.9), mat(0x777777), [6.3 + i * 0.95, 0.6, 0], [0, 0.6, 0]));
+  g.position.set(31, 0, 26);
+  g.rotation.y = -0.5;
+  tools.add(g);
+}
+{ // Gunting
+  const g = new THREE.Group();
+  for (const s of [-1, 1]) {
+    const b = new THREE.Shape();
+    b.moveTo(0, 0); b.lineTo(10, s * 0.25); b.lineTo(10.3, s * 0.05); b.lineTo(0.5, -s * 0.6); b.closePath();
+    const bgm = new THREE.ExtrudeGeometry(b, { depth:0.12, bevelEnabled:false });
+    bgm.rotateX(-Math.PI / 2);
+    const bl = mesh(bgm, metal(0xdfe3e8, 0.12), [0, 0.12 + (s > 0 ? 0.13 : 0), 0]);
+    bl.rotation.y = s * 0.12;
+    g.add(bl);
+    const loop = mesh(new THREE.TorusGeometry(1.4, 0.35, 12, 32), mat(0xc62828, { roughness:0.4 }), [-2.4, 0.35, s * 1.7], [Math.PI / 2, 0, 0]);
+    loop.scale.set(1.3, 1, 1);
+    g.add(loop, rbox(2.2, 0.5, 0.6, 0.2, mat(0xc62828), [-0.7, 0.35, s * 0.75], [0, -s * 0.6, 0]));
+  }
+  g.add(mesh(new THREE.CylinderGeometry(0.25, 0.25, 0.5, 16), metal(), [0.4, 0.3, 0]));
+  g.position.set(-39, 0, -8);
+  g.rotation.y = 0.9;
+  tools.add(g);
+}
+{ // Penggaris besi
+  const tex = canvasTex(2048, 128, (c, w, h) => {
+    c.fillStyle = '#c9ced6'; c.fillRect(0, 0, w, h); c.fillStyle = '#222';
+    for (let i = 0; i <= 300; i++) {
+      const x = 20 + i * (w - 40) / 300, len = i % 10 === 0 ? 50 : i % 5 === 0 ? 34 : 20;
+      c.fillRect(x, 0, 2, len);
+      if (i % 10 === 0) { c.font = 'bold 22px Inter, sans-serif'; c.fillText(String(i / 10), x + 4, 78); }
+    }
+  });
+  const sm = metal(0xc9ced6, 0.3);
+  const r = mesh(new THREE.BoxGeometry(32, 0.12, 2.6), [sm, sm, new THREE.MeshStandardMaterial({ map:tex, metalness:0.7, roughness:0.3 }), sm, sm, sm], [2, 0.06, -24]);
+  r.rotation.y = 0.04;
+  tools.add(r);
+}
+// Ban cadangan dan sekrup di atas cutting mat
+for (const [x, z] of [[19, 13], [22.6, 15]]) tools.add(mesh(lathe([[1.0, -0.7], [1.5, -0.7], [1.75, -0.4], [1.75, 0.4], [1.5, 0.7], [1.0, 0.7]], 40), mat(0x141414, { roughness:0.9 }), [x, 1.0, z]));
+for (let i = 0; i < 6; i++) tools.add(screw([16 + i * 1.1, 0.35, 18.5 + (i % 2) * 0.6]));
+
+// =====================================================================
+// STUDIO
+// =====================================================================
+const studio = new THREE.Group();
+studio.visible = false;
+scene.add(studio);
+const noiseTex = canvasTex(512, 512, (c, w, h) => {
+  c.fillStyle = '#e8e8e6'; c.fillRect(0, 0, w, h);
+  for (let i = 0; i < 12000; i++) { const v = 195 + Math.random() * 55 | 0; c.fillStyle = `rgba(${v},${v},${v},.35)`; c.fillRect(Math.random() * w, Math.random() * h, 2, 2); }
+}, [16, 16]);
+const sFloor = new THREE.Mesh(new THREE.CircleGeometry(220, 64), new THREE.MeshStandardMaterial({ map:noiseTex, roughness:0.95 }));
+sFloor.rotation.x = -Math.PI / 2;
+sFloor.receiveShadow = true;
+studio.add(sFloor);
+const turn = new THREE.Group();
+turn.add(mesh(new THREE.CylinderGeometry(15, 15.5, 0.3, 96), mat(0xdcdcdc, { roughness:0.3, metalness:0.2 }), [0, 0.15, 0]));
+turn.add(mesh(new THREE.TorusGeometry(15.2, 0.08, 8, 120), mat(0x4a8cff, { emissive:0x1a3a80 }), [0, 0.31, 0], [Math.PI / 2, 0, 0]));
+studio.add(turn);
+
+// =====================================================================
+// LINTASAN (stadium berdinding, seperti trek Japan Cup sederhana)
+// =====================================================================
+const TR = { straight:80, r:34, lane:13.5 };
+const TRACK_LEN = 2 * TR.straight + 2 * Math.PI * TR.r;
+const track = new THREE.Group();
+track.visible = false;
+scene.add(track);
+function stadium(path, rad) {
+  const h = TR.straight / 2;
+  path.moveTo(-h, -rad); path.lineTo(h, -rad);
+  path.absarc(h, 0, rad, -Math.PI / 2, Math.PI / 2, false);
+  path.lineTo(-h, rad);
+  path.absarc(-h, 0, rad, Math.PI / 2, Math.PI * 1.5, false);
+  return path;
+}
+function ring(rOut, rIn, height, material, y = 0) {
+  const s = stadium(new THREE.Shape(), rOut);
+  s.holes.push(stadium(new THREE.Path(), rIn));
+  const g = new THREE.ExtrudeGeometry(s, { depth:height, bevelEnabled:false, curveSegments:64 });
+  g.rotateX(-Math.PI / 2);
+  const m = mesh(g, material, [0, y, 0]);
+  track.add(m);
+  return m;
+}
+{
+  const ro = TR.r + TR.lane / 2, ri = TR.r - TR.lane / 2;
+  ring(ro + 0.7, ri - 0.7, 0.4, mat(0x3a3f4b, { roughness:0.75 }));
+  ring(ro - 0.3, ro - 0.55, 0.43, mat(0xffffff, { roughness:0.5 }));
+  ring(ri + 0.55, ri + 0.3, 0.43, mat(0xffffff, { roughness:0.5 }));
+  ring(ro + 0.7, ro, 3.8, mat(0xeef1f4, { roughness:0.4 }));
+  ring(ri, ri - 0.7, 3.8, mat(0xeef1f4, { roughness:0.4 }));
+  ring(ro + 0.8, ro - 0.1, 0.3, mat(0x1d4fd8, { roughness:0.3 }), 3.8);
+  ring(ri + 0.1, ri - 0.8, 0.3, mat(0xd81e1e, { roughness:0.3 }), 3.8);
+  // Garis start kotak-kotak
+  const chk = canvasTex(256, 64, (c, w, h) => { for (let x = 0; x < 16; x++) for (let y = 0; y < 4; y++) { c.fillStyle = (x + y) % 2 ? '#111' : '#fff'; c.fillRect(x * 16, y * 16, 16, 16); } });
+  const sl = new THREE.Mesh(new THREE.PlaneGeometry(2.4, TR.lane), new THREE.MeshStandardMaterial({ map:chk }));
+  sl.rotation.set(-Math.PI / 2, 0, Math.PI / 2);
+  sl.position.set(0, 0.44, TR.r);
+  track.add(sl);
+  // Gapura start
+  const banner = canvasTex(1024, 128, (c, w, h) => {
+    c.fillStyle = '#d81e1e'; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#fff'; c.font = 'italic 900 78px Inter, sans-serif'; c.textAlign = 'center'; c.fillText('MINI 4WD CUP', w / 2, 92);
+  });
+  for (const s of [-1, 1]) track.add(rbox(1.2, 14, 1.2, 0.3, mat(0x222222), [0, 7, TR.r + s * (TR.lane / 2 + 2.2)]));
+  const bm = new THREE.MeshStandardMaterial({ map:banner, roughness:0.5 });
+  track.add(mesh(new THREE.BoxGeometry(0.5, 3, TR.lane + 6), [bm, bm, mat(0xd81e1e), mat(0xd81e1e), mat(0xd81e1e), mat(0xd81e1e)], [0, 13.5, TR.r]));
+}
+// Posisi dan arah di sepanjang lintasan, s = jarak tempuh
+function trackAt(s) {
+  s = ((s % TRACK_LEN) + TRACK_LEN) % TRACK_LEN;
+  const h = TR.straight / 2, r = TR.r, S = TR.straight, C = Math.PI * r;
+  if (s < S) return { x:-h + s, z:r, yaw:0, curve:false };
+  s -= S;
+  if (s < C) { const f = s / r; return { x:h + r * Math.sin(f), z:r * Math.cos(f), yaw:f, curve:true, cx:h }; }
+  s -= C;
+  if (s < S) return { x:h - s, z:-r, yaw:Math.PI, curve:false };
+  s -= S;
+  const f = s / r;
+  return { x:-h - r * Math.sin(f), z:-r * Math.cos(f), yaw:Math.PI + f, curve:true, cx:-h };
+}
+
+// =====================================================================
+// MERAKIT MODEL
+// =====================================================================
+const car = new THREE.Group();
+car.position.y = GROUND;
+car.rotation.order = 'YXZ'; // putar arah hadap dulu, baru miring (body roll)
+scene.add(car);
+let parts = [], spinners = [], wheelSpinners = [], bodyMats = [];
+function buildCar(cfg, liv, animateSlots = []) {
+  // Jika sedang terbongkar (rakit manual), part baru ikut mulai dalam keadaan terbongkar
+  const startEx = parts.some(p => p.exT === 1) ? 1 : 0;
+  car.clear();
+  parts = []; spinners = []; wheelSpinners = []; bodyMats = [];
+  const P = pick(cfg);
+  const c = P.chassis, R = P.wheel.r, W = 4.55, AX = 5.4;
+  const dir = c.motor === 'front' ? 1 : -1;
+
+  function part(slot, name, explode, build) {
+    const g = new THREE.Group();
+    build(g);
+    car.add(g);
+    const p = { slot, name, g, base:g.position.clone(), explode:new THREE.Vector3(...explode), meshes:[], local: animateSlots.includes(slot) && !startEx ? 1 : 0, ex:startEx, exT:startEx };
+    g.traverse(o => { if (o.isMesh) { p.meshes.push(o); o.userData.part = p; } });
+    parts.push(p);
+  }
+
+  // ---- Sasis dari model 3D asli (STL hasil konversi Blender), jika tersedia
+  const M = c.model && MODEL_GEO[c.model];
+  const mbox = key => { const b = M[key].boundingBox.clone(); b.min.y += R; b.max.y += R; return b; };
+  if (M) {
+    const plastic = () => new THREE.MeshPhysicalMaterial({ color:c.color, roughness:0.48, metalness:0, clearcoat:0.3, clearcoatRoughness:0.5 });
+    const mpart = (name, key, material, explode) => part('chassis', name, explode, g => { g.position.y = R; g.add(mesh(M[key], material)); });
+    mpart(`Sasis ${c.name}`, 'sasis', plastic(), [0, -3, 0]);
+    mpart('Gear Cover', 'gear_cover', plastic(), [-1, 3, 4.5]);
+    mpart('Dudukan Dinamo', 'motor_bracket', plastic(), [-2.5, 1.2, 0]);
+    mpart('Bumper Belakang', 'rear_bumper', plastic(), [-5, -2.2, 0]);
+    mpart('Penutup Saklar', 'switch_cover', plastic(), [3.5, 2.5, 0]);
+    mpart('Tombol Saklar', 'switch_knob', mat(0xffd000, { roughness:0.35 }), [3.5, 4.5, -2.5]);
+    mpart('Penahan Baterai', 'battery_retainer', metal(0xc9ced6, 0.3), [0, 9.5, 0]);
+    // File bearing Printables diletakkan di luar sasis (untuk dicetak), bukan di lubangnya.
+    // Bearing dipindah ke lubang as yang terukur (y 30 & 110 mm = x ±AX), lalu dicerminkan ke sisi lain.
+    part('chassis', 'Bearing Roda ×4', [0, 0.6, 0], g => {
+      g.position.y = R;
+      const bm = metal(0xd4a24a, 0.25);
+      const bc = M.wheel_bearing.boundingBox.getCenter(new THREE.Vector3());
+      for (const ax of [AX, -AX]) for (const sz of [1, -1]) {
+        const b = mesh(M.wheel_bearing, sz > 0 ? bm : new THREE.MeshStandardMaterial({ color:0xd4a24a, metalness:0.9, roughness:0.25, side:THREE.DoubleSide }), [ax - bc.x, -bc.y, 0]);
+        b.scale.z = sz;
+        g.add(b);
+      }
+    });
+  } else
+  // ---- Sasis: pelat berlubang + dinding samping + sekrup
+  part('chassis', `Sasis ${c.name}`, [0, -3, 0], g => {
+    const m = mat(c.color, { roughness:0.55 });
+    const s = roundRect(new THREE.Shape(), -7.6, -3.1, 15.2, 6.2, 0.9);
+    const slots = c.id === 'vz' || c.id === 'ar' ? [-5.6, -4.2, 3.6, 5.0, 6.3] : [-5.4, 4.0, 5.6];
+    for (const x of slots) for (const z of [-1.9, 1.9]) s.holes.push(roundRect(new THREE.Path(), x - 0.45, z - 0.55, 0.9, 1.1, 0.3));
+    for (const x of [-1.5, 1.5]) { const h = new THREE.Path(); h.absarc(x + (c.motor === 'mid' ? 3.2 : 0), 0, 0.35, 0, Math.PI * 2, true); s.holes.push(h); }
+    const geo = new THREE.ExtrudeGeometry(s, { depth:0.35, bevelEnabled:true, bevelThickness:0.08, bevelSize:0.08, bevelSegments:2 });
+    geo.rotateX(-Math.PI / 2);
+    g.add(mesh(geo, m, [0, 0.85, 0]));
+    // Dinding samping dengan potongan ringan
+    for (const z of [-2.85, 2.85]) {
+      const ws = new THREE.Shape();
+      ws.moveTo(-7, 0); ws.lineTo(7, 0); ws.lineTo(7, 1.0); ws.lineTo(4.2, 1.35); ws.lineTo(-4.2, 1.35); ws.lineTo(-7, 1.0); ws.closePath();
+      for (const x of [-2.6, 0, 2.6]) ws.holes.push(roundRect(new THREE.Path(), x - 0.8, 0.35, 1.6, 0.6, 0.25));
+      const wg = new THREE.ExtrudeGeometry(ws, { depth:0.3, bevelEnabled:true, bevelThickness:0.05, bevelSize:0.05, bevelSegments:2 });
+      wg.translate(0, 0, -0.15);
+      g.add(mesh(wg, m, [0, 1.2, z]));
+    }
+    // Rumah gear dan bumper bawaan
+    g.add(rbox(2.0, 1.3, 5.6, 0.25, m, [7.0, 1.75, 0]));
+    g.add(rbox(2.0, 1.3, 5.6, 0.25, m, [-7.0, 1.75, 0]));
+    if (c.id === 'ms') for (const x of [-2.6, 2.6]) g.add(rbox(0.3, 1.5, 6.0, 0.1, mat(0xff6a00), [x, 1.7, 0]));
+    if (c.id === 'fma') g.add(rbox(15, 0.08, 0.6, 0.04, mat(0x3a7bd5), [0, 1.33, 0]));
+    for (const [x, z] of [[-6.5, -2.2], [-6.5, 2.2], [6.5, -2.2], [6.5, 2.2], [0, -2.3], [0, 2.3], [-3.5, 0], [3.5, 0]]) g.add(screw([x, 1.33, z]));
+  });
+
+  // ---- Dinamo + gear
+  const motorBody = (g, rot) => {
+    const lab = new THREE.MeshStandardMaterial({ map:motorLabel(P.motor), roughness:0.4, metalness:0.3 });
+    g.add(mesh(new THREE.CylinderGeometry(1.0, 1.0, 2.4, 40, 1, true), lab, [0, 0, 0], rot));
+    g.add(mesh(new THREE.CylinderGeometry(0.98, 0.98, 2.4, 40), metal(0x9aa0aa), [0, 0, 0], rot));
+    return lab;
+  };
+  if (c.motor === 'mid') {
+    part('motor', `Dinamo ${P.motor.name}`, [0, 5, 0], g => {
+      g.position.set(0, 2.4, 0);
+      motorBody(g, ROT_X);
+      g.add(mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.5, 40), mat(P.motor.cap, { roughness:0.35 }), [-1.45, 0, 0], ROT_X));
+      g.add(mesh(new THREE.CylinderGeometry(0.92, 1.0, 0.3, 40), metal(), [1.35, 0, 0], ROT_X));
+      g.add(mesh(new THREE.CylinderGeometry(0.12, 0.12, 4.8, 12), metal(), [0, 0, 0], ROT_X));
+      for (const z of [-0.5, 0.5]) g.add(rbox(0.2, 0.5, 0.25, 0.05, metal(0xd4a24a), [-1.75, 0.6, z]));
+    });
+    part('gear', `Gear ${P.gear.ratio}:1`, [0, 3.5, 3], g => {
+      g.position.set(0, 2.4, 0);
+      const gs = 1.0 + (P.gear.ratio - 3.5) * 0.22;
+      for (const s of [-1, 1]) {
+        const pin = mesh(gearGeometry(8, 0.42, 0.31, 0.4), metal(0xc77b3a, 0.3), [s * 2.35, 0, 0], [0, Math.PI / 2, 0]);
+        const cnt = mesh(gearGeometry(20, 0.78 * gs, 0.66 * gs, 0.3), mat(0x2fa8e0), [s * 3.6, 0.2, 0.9], [0, Math.PI / 2, 0]);
+        const crown = mesh(gearGeometry(24, 1.0, 0.86, 0.3), mat(0xf2f2f2), [s * AX, R - 2.4, 0.6]);
+        g.add(pin, cnt, crown);
+        spinners.push([pin, 'z', 30], [cnt, 'z', -12], [crown, 'z', 4]);
+      }
+    });
+  } else {
+    // Pada sasis model, dinamo diletakkan tepat di dudukannya
+    let mx = 3.6 * dir, my = 2.5;
+    if (M) { const b = mbox('motor_bracket'), cc = b.getCenter(new THREE.Vector3()); mx = cc.x; my = cc.y + 0.15; }
+    part('motor', `Dinamo ${P.motor.name}`, [dir, 4, 0], g => {
+      g.position.set(mx, my, 0);
+      const FM = MODEL_GEO.fa130?.fa130;
+      if (FM) {
+        // Dinamo single shaft memakai model asli Mabuchi FA-130; poros model ada di -z, diputar ke +z (sisi pinion)
+        const m = mesh(FM, metal(0xc4c9d1, 0.3));
+        m.rotation.y = Math.PI;
+        g.add(m);
+        // Tanda warna jenis dinamo di tutup belakang
+        g.add(mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.08, 32), mat(P.motor.cap, { roughness:0.35 }), [0, 0, -FM.boundingBox.max.z - 0.04], ROT_Z));
+        return;
+      }
+      motorBody(g, ROT_Z);
+      g.add(mesh(new THREE.CylinderGeometry(1.0, 1.0, 0.55, 40), mat(P.motor.cap, { roughness:0.35 }), [0, 0, -1.45], ROT_Z));
+      g.add(mesh(new THREE.CylinderGeometry(0.92, 1.0, 0.3, 40), metal(), [0, 0, 1.35], ROT_Z));
+      g.add(mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.9, 12), metal(), [0, 0, 1.85], ROT_Z));
+      for (const x of [-0.5, 0.5]) g.add(rbox(0.25, 0.5, 0.2, 0.05, metal(0xd4a24a), [x, 0.6, -1.75]));
+    });
+    part('gear', `Gear ${P.gear.ratio}:1`, [dir * 2, 3.5, 4], g => {
+      g.position.set(0, 0, 2.35);
+      const gs = 1.0 + (P.gear.ratio - 3.5) * 0.22;
+      const pin = mesh(gearGeometry(8, 0.45, 0.33, 0.4), metal(0xc77b3a, 0.3), [mx, my, 0]);
+      // Pada sasis model, gear counter duduk di dalam gear cover: di antara pinion dan spur as roda
+      const cnt = M ? mesh(gearGeometry(22, 0.75 * gs, 0.64 * gs, 0.3), mat(0x2fa8e0), [(mx + AX * dir) / 2, (my + R) / 2 + 0.25, 0])
+                    : mesh(gearGeometry(26, 1.15 * gs, 1.0 * gs, 0.3), mat(0x2fa8e0), [mx + dir * 0.9, my + 0.95 * gs, 0]);
+      const spur = mesh(gearGeometry(32, 1.45, 1.3, 0.3), mat(0xf2f2f2), [AX * dir, R, 0.05]);
+      g.add(pin, cnt, spur);
+      spinners.push([pin, 'z', 30], [cnt, 'z', -10], [spur, 'z', 3]);
+    });
+  }
+
+  for (const [x, nm] of [[AX, 'As Depan'], [-AX, 'As Belakang']]) {
+    part('chassis', nm, [x > 0 ? 2 : -2, -1.5, 0], g => {
+      g.position.set(x, R, 0);
+      const rod = mesh(new THREE.CylinderGeometry(0.11, 0.11, 2 * W + 1.4, 12), metal(), [0, 0, 0], ROT_Z);
+      g.add(rod);
+      for (const z of [-2.7, 2.7]) g.add(mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.3, 20), metal(0x8d939c), [0, 0, z], ROT_Z));
+      spinners.push([rod, 'y', 3]);
+    });
+  }
+
+  // ---- Baterai
+  part('battery', `Baterai ${P.battery.name}`, [0, 6, 0], g => {
+    const isMid = c.motor === 'mid';
+    // Ukuran asli AA (14,5 x 50 mm) untuk sasis model; versi kode sedikit lebih kecil
+    let br = 0.75, bl = 5.0, zs = isMid ? [-1.95, 1.95] : [-0.82, 0.82];
+    g.position.set(isMid ? 0 : -1.8 * dir, 2.15, 0);
+    if (M) {
+      const b = mbox('battery_retainer');
+      br = 0.97; bl = 6.6; zs = [-0.99, 0.99];
+      g.position.set(b.getCenter(new THREE.Vector3()).x, b.min.y - br + 0.05, 0);
+    }
+    const lab = new THREE.MeshStandardMaterial({ map:batteryLabel(P.battery.id), roughness:0.35, metalness:0.15 });
+    for (const z of zs) {
+      // Label baterai kedua diputar di sumbunya sendiri (geometri), bukan seluruh baterai
+      const cg = new THREE.CylinderGeometry(br, br, bl, 40);
+      if (z > 0) cg.rotateY(0.6);
+      g.add(mesh(cg, lab, [0, 0, z], ROT_X));
+      g.add(mesh(new THREE.CylinderGeometry(br * 0.4, br * 0.4, 0.2, 20), metal(), [bl / 2 + 0.08, 0, z], ROT_X));
+      g.add(mesh(new THREE.CylinderGeometry(br * 0.93, br * 0.93, 0.06, 30), metal(0x9aa0aa), [-bl / 2 - 0.02, 0, z], ROT_X));
+    }
+  });
+
+  if (!M) part('chassis', 'Saklar', [0, 2, -5], g => {
+    g.position.set(-1.2 * dir, 1.65, -3.25);
+    g.add(rbox(1.7, 0.7, 0.4, 0.12, mat(0x1d1f23)));
+    g.add(rbox(0.5, 0.4, 0.3, 0.08, mat(0xffd000), [0.35, 0.05, -0.28]));
+  });
+
+  // ---- Roda: ban berprofil + velg berjari-jari
+  for (const x of [AX, -AX]) for (const z of [W, -W]) {
+    const left = z > 0;
+    part('wheel', `Roda ${x > 0 ? 'Depan' : 'Belakang'} ${left ? 'Kiri' : 'Kanan'}`, [0, 0, left ? 4 : -4], g => {
+      g.position.set(x, R, z);
+      const w = new THREE.Group();
+      const s = left ? 1 : -1, tw = P.wheel.tw, ri = P.wheel.rim, hw = tw / 2;
+      const tire = lathe([[ri, -hw], [R - 0.3, -hw], [R - 0.06, -hw + 0.12], [R, -hw + 0.35], [R, hw - 0.35], [R - 0.06, hw - 0.12], [R - 0.3, hw], [ri, hw]], 56);
+      w.add(mesh(tire, mat(0x141414, { roughness:0.92 }), [0, 0, 0], ROT_Z));
+      // Velg: piringan berlubang 5
+      const rs = new THREE.Shape();
+      rs.absarc(0, 0, ri + 0.02, 0, Math.PI * 2, false);
+      for (let i = 0; i < 5; i++) {
+        const a = i * Math.PI * 2 / 5, h = new THREE.Path();
+        h.absarc(Math.cos(a) * ri * 0.58, Math.sin(a) * ri * 0.58, ri * 0.26, 0, Math.PI * 2, true);
+        rs.holes.push(h);
+      }
+      const hub = new THREE.Path(); hub.absarc(0, 0, 0.14, 0, Math.PI * 2, true); rs.holes.push(hub);
+      const rg = new THREE.ExtrudeGeometry(rs, { depth:0.18, bevelEnabled:true, bevelThickness:0.06, bevelSize:0.05, bevelSegments:2, curveSegments:24 });
+      const rimMat = mat(liv.rim, { roughness:0.3 });
+      w.add(mesh(rg, rimMat, [0, 0, (hw - 0.3) * s]));
+      w.add(mesh(new THREE.CylinderGeometry(ri, ri, tw - 0.1, 40, 1, true), rimMat, [0, 0, 0], ROT_Z));
+      w.add(mesh(new THREE.CylinderGeometry(ri - 0.05, ri - 0.05, 0.1, 40), mat(0x1a1a1a), [0, 0, -0.1 * s], ROT_Z));
+      w.add(mesh(new THREE.CylinderGeometry(0.34, 0.28, 0.35, 24), metal(), [0, 0, (hw - 0.05) * s], ROT_Z));
+      g.add(w);
+      wheelSpinners.push(w);
+    });
+  }
+
+  // ---- Bumper / plate + roller
+  const plate = P.plate, rol = P.roller;
+  // Titik pasang roller: dari ujung bumper model 3D, atau posisi tetap versi kode
+  const ends = M ? (() => {
+    const fb = mbox('sasis'), rb = mbox('rear_bumper');
+    // Roller harus berada di depan/belakang ban (bukan menimpa ban): minimal jari-jari ban + roller + celah
+    const clear = AX + R + rol.r + 0.2 - 0.35;
+    return [{ x:Math.max(fb.max.x - 0.45, clear), z:fb.max.z - 0.45 + (rol.r - 0.65) * 0.6, y:R + 0.35, front:true },
+            { x:Math.min(rb.min.x + 0.45, -clear), z:rb.max.z - 0.45 + (rol.r - 0.65) * 0.6, y:R + 0.35, front:false }];
+  })() : [8.7, -8.7].map(x => ({ x, z:5.05 + (rol.r - 0.65) * 0.8, y:2.15, front:x > 0 }));
+  for (const end of ends) {
+    const { x, front } = end, rollerZ = end.z;
+    if (M && plate.id === 'stock') { addRollers(end); continue; }
+    part('plate', `${plate.id === 'stock' ? 'Bumper' : plate.name} ${front ? 'Depan' : 'Belakang'}`, [front ? 4 : -4, 0, 0], g => {
+      // Pada sasis model, plate dipusatkan di bawah roller agar tidak menjorok ke ban
+      g.position.set(M ? x + (front ? 0.35 : -0.35) : x, M ? end.y - 0.65 : 1.5, 0);
+      if (!M) {
+        g.add(rbox(1.4, 0.5, 10.6, 0.2, mat(c.color, { roughness:0.55 })));
+        g.add(rbox(0.8, 0.9, 1.6, 0.2, mat(c.color), [front ? -0.7 : 0.7, 0.25, 0]));
+      }
+      if (plate.id !== 'stock') {
+        const pm = plate.id === 'frp' ? mat(0x9aa892, { roughness:0.6 }) : mat(0x0e0e0f, { roughness:0.15, metalness:0.6 });
+        const pd = M ? 1.6 : 2.6;
+        const ps = roundRect(new THREE.Shape(), -pd / 2, -(rollerZ + 0.6), pd, (rollerZ + 0.6) * 2, 0.5);
+        for (const zz of [-2.5, 0, 2.5]) { const h = new THREE.Path(); h.absarc(0, zz, 0.3, 0, Math.PI * 2, true); ps.holes.push(h); }
+        const pg = new THREE.ExtrudeGeometry(ps, { depth:0.14, bevelEnabled:false });
+        pg.rotateX(-Math.PI / 2);
+        g.add(mesh(pg, pm, [M ? (front ? 0.15 : -0.15) : (front ? 0.3 : -0.3), 0.4, 0]));
+        for (const zz of [-2.5, 2.5]) g.add(screw([front ? 0.3 : -0.3, 0.6, zz]));
+      }
+    });
+    addRollers(end);
+  }
+  function addRollers({ x, z:rollerZ, y, front }) {
+    for (const z of [rollerZ, -rollerZ]) {
+      part('roller', `Roller ${rol.name} ${front ? 'Depan' : 'Belakang'} ${z > 0 ? 'Kiri' : 'Kanan'}`, [front ? 6 : -6, 1.5, z > 0 ? 1.5 : -1.5], g => {
+        g.position.set(x + (front ? 0.35 : -0.35), y, z);
+        const r = rol.r;
+        const prof = lathe([[0.16, -0.36], [r, -0.36], [r, -0.26], [r - 0.08, -0.18], [r - 0.08, 0.18], [r, 0.26], [r, 0.36], [0.16, 0.36]], 40);
+        const rm = rol.metal ? mat(0x2a63d6, { metalness:0.85, roughness:0.28 }) : mat(0xf4f4f4, { roughness:0.4 });
+        const rr = mesh(prof, rm);
+        g.add(rr, mesh(new THREE.CylinderGeometry(0.17, 0.17, 1.3, 12), metal()), mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.12, 6), metal(0xb8bec8), [0, 0.68, 0]));
+        spinners.push([rr, 'y', 6]);
+      });
+    }
+  }
+
+  // ---- Body gabungan + livery
+  const B = P.body;
+  const BM = B.model && MODEL_GEO[B.model];
+  if (BM) part('body', B.name, [0, 9, 0], g => {
+    // Body model 3D: cat mengilap (clearcoat) dengan warna utama livery
+    const bm = new THREE.MeshPhysicalMaterial({ color:liv.p, roughness:0.32, metalness:0.05, clearcoat:1, clearcoatRoughness:0.07, side:THREE.DoubleSide });
+    if (B.livery) { bm.color.setHex(0xffffff); bm.map = modelLiveryTex(liv); bm.userData.liveryModel = true; }
+    bodyMats.push(bm);
+    // Body yang titik asalnya di as roda (Magnum) dinaikkan setinggi jari-jari roda
+    const m = mesh(B.livery ? sideUV(B.model, BM.body) : BM.body, bm, [B.offset[0], B.offset[1] + (B.axleOrigin ? R : 0), 0]);
+    m.rotation.y = B.rotY;
+    if (B.scale) m.scale.set(...B.scale);
+    g.add(m);
+  });
+  else part('body', B.name, [0, 9, 0], g => {
+    const bm = mat(liv.p, { roughness:0.22, metalness:0.15 });
+    bodyMats.push(bm);
+    const shape = new THREE.Shape();
+    B.profile.forEach((pt, i) => i ? shape.lineTo(...pt) : shape.moveTo(...pt));
+    shape.closePath();
+    const half = 3.0, bev = 0.55;
+    const geo = new THREE.ExtrudeGeometry(shape, { depth:2 * (half - bev), bevelEnabled:true, bevelThickness:bev, bevelSize:0.3, bevelSegments:5, curveSegments:4 });
+    geo.translate(0, 0, -(half - bev));
+    g.add(mesh(geo, bm));
+    // Stiker livery di kedua sisi
+    const lt = liveryTex(B.profile, liv, liv.num);
+    for (const s of [-1, 1]) {
+      const dm = new THREE.MeshStandardMaterial({ map:lt, transparent:true, roughness:0.25, polygonOffset:true, polygonOffsetFactor:-2 });
+      const dp = new THREE.Mesh(new THREE.PlaneGeometry(17.2, 4.2), dm);
+      dp.position.set(0, 3.9, s * (half + 0.005));
+      if (s < 0) { dp.rotation.y = Math.PI; dp.scale.x = -1; }
+      g.add(dp);
+    }
+    // Garis kap tengah
+    const strip = new THREE.ExtrudeGeometry(shape, { depth:0.9, bevelEnabled:false });
+    strip.translate(0, 0.33, -0.45);
+    g.add(mesh(strip, mat(liv.s, { roughness:0.25 })));
+    // Sidepod / rok samping
+    for (const s of [-1, 1]) {
+      g.add(rbox(12.5, 0.5, 0.8, 0.2, bm, [-0.4, 2.45, s * 3.2]));
+      g.add(rbox(2.6, 0.45, 0.6, 0.15, mat(0x111111), [1.6, 2.5, s * 3.55]));
+    }
+    // Spatbor roda
+    if (B.fenders) for (const x of [5.4, -5.4]) for (const s of [-1, 1]) {
+      const fg = new THREE.CylinderGeometry(R + 0.45, R + 0.45, 1.9, 28, 1, true, Math.PI / 2, Math.PI);
+      const fm = mesh(fg, new THREE.MeshStandardMaterial({ color:liv.p, roughness:0.22, metalness:0.15, side:THREE.DoubleSide }), [x, R - GROUND * 0, s * 4.55], ROT_Z);
+      bodyMats.push(fm.material);
+      g.add(fm);
+      g.add(mesh(new THREE.BoxGeometry(2.0, 0.35, 1.5), bm, [x, R + 0.35, s * 3.45]));
+    }
+    // Kokpit
+    const [cx, cy] = B.canopy;
+    const can = mesh(new THREE.SphereGeometry(1, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat(0x0b1018, { roughness:0.05, metalness:0.7 }), [cx, cy - 0.15, 0]);
+    can.scale.set(2.3, 0.95, 1.7);
+    g.add(can);
+    g.add(rbox(0.5, 0.3, 2.4, 0.1, mat(liv.a), [cx + 2.0, cy - 0.15, 0]));
+    // Lampu depan
+    const nose = B.profile[2];
+    for (const s of [-1, 1]) g.add(rbox(0.3, 0.3, 0.9, 0.1, mat(0xfff3c0, { emissive:0x332a00 }), [nose[0] - 0.15, nose[1] - 0.25, s * 1.3]));
+    // Sayap
+    if (B.wing) {
+      const top = Math.max(...B.profile.filter(pt => pt[0] < -6).map(pt => pt[1]));
+      const wm = mat(liv.s, { roughness:0.25 });
+      g.add(rbox(2.4, 0.22, 7.8, 0.1, wm, [-7.3, top + 1.95, 0]));
+      g.add(rbox(1.8, 0.1, 7.6, 0.04, mat(liv.p), [-7.25, top + 2.1, 0]));
+      for (const s of [-1, 1]) {
+        g.add(rbox(2.2, 1.9, 0.18, 0.08, mat(liv.a), [-7.2, top + 1.25, s * 3.9]));
+        g.add(rbox(0.25, 1.6, 0.25, 0.08, mat(0x111111), [-6.9, top + 0.95, s * 1.4]));
+      }
+    }
+  });
+
+  const bad = new Set(check(cfg).filter(r => r.level === 'error').flatMap(r => r.slots));
+  parts.forEach(p => { if (bad.has(p.slot)) p.meshes.forEach(m => { if (m.material.emissive) { m.material = m.material.clone(); m.material.emissive.setHex(0x660000); m.userData.bad = true; } }); });
+  selected = null;
+  document.getElementById('info').style.display = 'none';
+}
+
+// =====================================================================
+// PANEL
+// =====================================================================
+const slotsEl = document.getElementById('slots'), statusEl = document.getElementById('status'), statsEl = document.getElementById('stats');
+let presetIdx = 0;
+let config = { ...PRESETS[0].cfg };
+let livery = { ...PRESETS[0].liv };
+try {
+  const saved = JSON.parse(localStorage.getItem('m4wd-garage') || 'null');
+  if (saved) { config = saved.config; livery = saved.livery; presetIdx = saved.presetIdx; }
+} catch {}
+const save = () => { try { localStorage.setItem('m4wd-garage', JSON.stringify({ config, livery, presetIdx })); } catch {} };
+
+function renderPanel() {
+  const issues = check(config);
+  slotsEl.innerHTML = '';
+  for (const k of SLOT_KEYS) {
+    const mine = issues.filter(r => r.slots.includes(k));
+    const level = mine.some(r => r.level === 'error') ? 'bad' : mine.length ? 'warn' : '';
+    const div = document.createElement('div');
+    div.className = 'slot';
+    const st = level === 'bad' ? '<span class="st" style="color:var(--bad)">✗ TIDAK COCOK</span>'
+             : level === 'warn' ? '<span class="st" style="color:var(--warn)">! PERHATIAN</span>' : '<span class="st" style="color:var(--ok)">✓</span>';
+    div.innerHTML = `<label>${CATALOG[k].label}${st}</label>`;
+    const sel = document.createElement('select');
+    sel.className = level;
+    for (const o of CATALOG[k].options) {
+      const prob = optionProblem(k, o.id, config);
+      const op = document.createElement('option');
+      op.value = o.id;
+      op.textContent = (prob ? '✗ ' : '') + o.name;
+      if (prob) { op.className = 'x'; op.title = prob; }
+      op.selected = o.id === config[k];
+      sel.appendChild(op);
+    }
+    sel.onchange = () => setPart(k, sel.value);
+    div.appendChild(sel);
+    div.insertAdjacentHTML('beforeend', `<div class="desc">${opt(k, config[k]).desc}</div>`);
+    slotsEl.appendChild(div);
+  }
+  const errs = issues.filter(r => r.level === 'error'), warns = issues.filter(r => r.level === 'warn');
+  statusEl.className = errs.length ? 'bad' : 'ok';
+  statusEl.innerHTML = errs.length
+    ? `<b>✗ BELUM BISA JALAN · ${errs.length} MASALAH</b><ul>${errs.map(r => `<li>${r.msg}</li>`).join('')}${warns.map(r => `<li class="w">${r.msg}</li>`).join('')}</ul>`
+    : `<b>✓ RAKITAN COCOK · SIAP BALAP</b>${warns.length ? `<ul>${warns.map(r => `<li class="w">${r.msg}</li>`).join('')}</ul>` : ''}`;
+
+  const s = stats(config);
+  const row = (n, v, t = v) => `<div class="stat"><span>${n}</span><div class="bar"><i style="width:${v}%"></i></div><span>${t}</span></div>`;
+  statsEl.innerHTML = row('Kecepatan', s.speed) + row('Akselerasi', s.accel) + row('Tikungan', s.corner) + row('Stabilitas', s.stable)
+    + `<div class="stat"><span>Berat</span><span></span><span>≈${s.weight}g</span></div>`;
+
+  const pr = PRESETS[presetIdx];
+  const isPreset = pr && SLOT_KEYS.every(k => pr.cfg[k] === config[k]);
+  document.getElementById('sideOwner').textContent = isPreset ? pr.owner : 'RAKITAN SENDIRI';
+  document.getElementById('sideNum').textContent = isPreset ? `${pr.liv.num} / 04` : '—';
+  document.getElementById('sideName').textContent = isPreset ? pr.name : (pr ? pr.name + ' (MODIF)' : 'MESIN KUSTOM');
+  document.getElementById('sideTag').textContent = isPreset ? pr.tag : 'Rakitan hasil modifikasimu sendiri.';
+  document.querySelectorAll('.card').forEach((el, i) => el.classList.toggle('on', i === presetIdx));
+  btnMotor.disabled = errs.length > 0;
+  if (errs.length && motorOn) toggleMotor();
+  updateNotes();
+}
+
+function setPart(k, id) {
+  config[k] = id;
+  save();
+  buildCar(config, livery, [k]);
+  renderPanel();
+  if (audio) blip(520, 0.06);
+}
+function loadPreset(i) {
+  presetIdx = i;
+  config = { ...PRESETS[i].cfg };
+  livery = { ...PRESETS[i].liv };
+  save();
+  buildCar(config, livery, SLOT_KEYS);
+  parts.forEach(p => p.local = 1 + ORDER.indexOf(p.slot) * 0.35);
+  renderPanel();
+}
+
+// Kartu preset dengan gambar mini mobil
+const presetsEl = document.getElementById('presets');
+PRESETS.forEach((pr, i) => {
+  const el = document.createElement('div');
+  el.className = 'card';
+  const cv = document.createElement('canvas');
+  cv.width = 150; cv.height = 52;
+  const g = cv.getContext('2d'), hex = c => '#' + c.toString(16).padStart(6, '0');
+  const body = opt('body', pr.cfg.body);
+  g.save(); g.translate(75, 50); g.scale(7.5, -7.5);
+  g.fillStyle = hex(pr.liv.p);
+  g.beginPath(); body.profile.forEach(([x, y], k) => k ? g.lineTo(x, y - 1.8) : g.moveTo(x, y - 1.8)); g.closePath(); g.fill();
+  g.fillStyle = hex(pr.liv.s); g.fillRect(-7, 0.9, 11, 0.35);
+  g.fillStyle = '#0b1018'; g.beginPath(); g.ellipse(body.canopy[0], body.canopy[1] - 1.8, 2, 0.7, 0, 0, Math.PI); g.fill();
+  if (body.wing) { g.fillStyle = hex(pr.liv.s); g.fillRect(-8.4, 4.1, 2.4, 0.3); }
+  for (const x of [5.4, -5.4]) { g.fillStyle = '#111'; g.beginPath(); g.arc(x, 0.3, 1.75, 0, Math.PI * 2); g.fill(); g.fillStyle = hex(pr.liv.rim); g.beginPath(); g.arc(x, 0.3, 1.0, 0, Math.PI * 2); g.fill(); }
+  g.restore();
+  el.innerHTML = `<div class="n">${pr.liv.num}</div>`;
+  el.appendChild(cv);
+  el.insertAdjacentHTML('beforeend', `<h4 class="display">${pr.name}</h4><p>${pr.style}</p>`);
+  el.onclick = () => loadPreset(i);
+  presetsEl.appendChild(el);
+});
+
+// =====================================================================
+// KAMERA / POV
+// =====================================================================
+const POVS = { '3/4':[25, 15, 29], 'Depan':[34, 7, 0.01], 'Belakang':[-34, 7, 0.01], 'Samping':[0.01, 6, 36], 'Atas':[0.01, 44, 0.01], 'Bawah':[0.01, -30, 0.01] };
+let camGoal = null;
+const povEl = document.getElementById('pov');
+for (const [name, pos] of Object.entries(POVS)) {
+  const b = document.createElement('button');
+  b.textContent = name;
+  b.onclick = () => {
+    camGoal = new THREE.Vector3(...pos);
+    controls.autoRotate = false; btnSpin.classList.remove('on');
+    // Lihat dari bawah: lantai disembunyikan sementara
+    floorHidden = name === 'Bawah';
+    applyEnv();
+  };
+  povEl.appendChild(b);
+}
+let floorHidden = false;
+controls.addEventListener('start', () => { camGoal = null; });
+controls.addEventListener('change', () => { if (floorHidden && camera.position.y > 0.5) { floorHidden = false; applyEnv(); } });
+
+// =====================================================================
+// MODE: GARASI / STUDIO / LINTASAN
+// =====================================================================
+let mode = 'garasi';
+const CAMS = ['Kejar', 'TV', 'Onboard', 'Atas'];
+let camMode = 0, camYaw = 0;
+function applyEnv() {
+  const st = mode === 'studio';
+  scene.background.setHex(st ? 0xeeeeec : 0x2a2219);
+  scene.fog.color.setHex(st ? 0xeeeeec : 0x2a2219);
+  table.visible = !st && !floorHidden;
+  cutMat.visible = tools.visible = mode === 'garasi' && !floorHidden;
+  studio.visible = st && !floorHidden;
+  track.visible = mode === 'lintasan';
+  key.color.setHex(st ? 0xffffff : 0xffe6c8);
+  key.intensity = st ? 2.2 : 2.6;
+}
+function setFov(fov) {
+  if (Math.abs(camera.fov - fov) < 0.05) return;
+  camera.fov = fov;
+  camera.updateProjectionMatrix();
+}
+function resetCar() {
+  car.rotation.set(0, 0, 0);
+  car.position.set(0, GROUND, 0);
+  for (const p of parts) if (p.slot === 'wheel') p.g.rotation.y = 0;
+}
+function setMode(m) {
+  if (m === mode) return;
+  mode = m;
+  document.body.classList.toggle('track', m === 'lintasan');
+  document.body.classList.toggle('studio', m === 'studio');
+  document.querySelectorAll('#modes button').forEach(b => b.classList.toggle('on', b.dataset.mode === m));
+  parts.forEach(p => p.exT = 0);
+  btnExplode.classList.remove('on');
+  if (motorOn) toggleMotor();
+  Object.assign(race, { on:false, crash:null, v:0, s:TR.straight / 2, dist:0, lap:0, lapT:0, slip:0, side:0 });
+  btnRace.textContent = 'Mulai Balap';
+  stopDrive(false);
+  clearSkids();
+  turn.rotation.y = 0;
+  floorHidden = false;
+  controls.autoRotate = false; btnSpin.classList.remove('on');
+  setFov(36);
+  if (m === 'lintasan') {
+    placeCar();
+    camYaw = car.rotation.y;
+    controls.enabled = CAMS[camMode] === 'Atas';
+    camera.position.set(-20, 20, TR.r + 50);
+    if (controls.enabled) { controls.target.set(0, 0, 0); camera.position.set(0, 120, 90); }
+  } else {
+    resetCar();
+    controls.enabled = true;
+    controls.target.set(0, 3, 0);
+    camGoal = new THREE.Vector3(...POVS['3/4']);
+    if (m === 'studio') toast('Tekan W A S D untuk mengemudi bebas. SPASI = rem tangan (drift), R = kembali ke meja putar.');
+  }
+  applyEnv();
+}
+document.querySelectorAll('#modes button').forEach(b => b.onclick = () => setMode(b.dataset.mode));
+
+const toastEl = document.getElementById('toast');
+let toastTimer;
+function toast(msg) {
+  toastEl.textContent = msg;
+  toastEl.style.opacity = 1;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.style.opacity = 0, 3400);
+}
+const invalid = () => check(config).some(r => r.level === 'error');
+
+// ---- Efek: bekas ban (skid mark) dan partikel asap / percikan
+const skidGeo = new THREE.PlaneGeometry(1.4, 0.7);
+skidGeo.rotateX(-Math.PI / 2);
+const skidMat = new THREE.MeshBasicMaterial({ color:0x111111, transparent:true, opacity:0.33, depthWrite:false });
+const skids = [];
+let skidIdx = 0;
+for (let i = 0; i < 700; i++) { const m = new THREE.Mesh(skidGeo, skidMat); m.visible = false; scene.add(m); skids.push(m); }
+function skid(pos, yaw, y) {
+  const m = skids[skidIdx++ % skids.length];
+  m.position.set(pos.x, y + 0.03, pos.z);
+  m.rotation.y = yaw;
+  m.visible = true;
+}
+function clearSkids() { skids.forEach(m => m.visible = false); }
+
+const fxGeo = new THREE.SphereGeometry(1, 8, 6);
+const fx = [];
+let fxIdx = 0;
+for (let i = 0; i < 140; i++) {
+  const m = new THREE.Mesh(fxGeo, new THREE.MeshBasicMaterial({ transparent:true, depthWrite:false }));
+  m.visible = false;
+  scene.add(m);
+  fx.push({ m, life:0, max:1, vel:new THREE.Vector3(), type:'' });
+}
+function emit(type, pos, vel) {
+  const p = fx[fxIdx++ % fx.length];
+  p.type = type; p.life = 0; p.max = type === 'smoke' ? 1.3 : 0.35;
+  p.vel.copy(vel);
+  p.m.position.copy(pos);
+  p.m.material.color.setHex(type === 'smoke' ? 0xd8d8d8 : 0xffb030);
+  p.m.scale.setScalar(type === 'smoke' ? 0.6 : 0.12);
+  p.m.visible = true;
+}
+function updateFx(dt) {
+  for (const p of fx) {
+    if (!p.m.visible) continue;
+    p.life += dt;
+    const k = p.life / p.max;
+    if (k >= 1) { p.m.visible = false; continue; }
+    p.m.position.addScaledVector(p.vel, dt);
+    if (p.type === 'smoke') { p.vel.y += 2 * dt; p.m.scale.setScalar(0.6 + k * 2.4); p.m.material.opacity = 0.42 * (1 - k); }
+    else { p.vel.y -= 30 * dt; p.m.material.opacity = 1 - k; }
+  }
+}
+const fxV = new THREE.Vector3(), fxV2 = new THREE.Vector3();
+// Bekas ban + asap di kedua roda belakang, percikan di roller sisi luar
+function driftEffects(slip, y, yaw, sparks) {
+  for (const s of [-1, 1]) {
+    car.localToWorld(fxV.set(-5.4, 0.2, s * 4.55));
+    skid(fxV, yaw, y);
+    if (Math.random() < slip * 0.6) emit('smoke', fxV, fxV2.set((Math.random() - 0.5) * 3, 1.5, (Math.random() - 0.5) * 3));
+  }
+  if (sparks && Math.random() < slip) {
+    car.localToWorld(fxV.set(7.8, 2.0, 5.4));
+    emit('spark', fxV, fxV2.set((Math.random() - 0.5) * 12, 6 + Math.random() * 6, (Math.random() - 0.5) * 12));
+  }
+}
+
+// =====================================================================
+// LINTASAN: balap otomatis (mini 4WD tidak bisa disetir, dipandu roller)
+// =====================================================================
+const race = { on:false, s:TR.straight / 2, v:0, dist:0, lap:0, lapT:0, best:null, crash:null, slip:0, side:0, yaw:0 };
+const btnRace = document.getElementById('btnRace'), btnCam = document.getElementById('btnCam');
+function raceParams() {
+  const st = stats(config);
+  return { vMax:20 + st.speed * 0.6, acc:12 + st.accel * 0.45, limit:40 + st.corner * 1.6 + st.stable * 0.8 };
+}
+function placeCar() {
+  const t = trackAt(race.s);
+  let x = t.x, z = t.z;
+  // Saat drift, mobil terdorong ke dinding luar (roller menempel dinding)
+  if (t.curve) { const ox = t.x - t.cx, l = Math.hypot(ox, t.z); x += ox / l * race.side; z += t.z / l * race.side; }
+  race.yaw = t.yaw;
+  car.position.set(x, 0.4, z);
+  car.rotation.set(0, t.yaw + race.slip * 0.32, 0);
+}
+btnRace.onclick = () => {
+  if (invalid()) { toast('Rakitan belum valid. Perbaiki part yang tidak cocok di Garasi dulu.'); return; }
+  ensureAudio();
+  race.on = !race.on;
+  btnRace.textContent = race.on ? 'Berhenti' : 'Mulai Balap';
+  if (race.on) { race.lapT = 0; race.dist = 0; }
+};
+btnCam.onclick = () => {
+  camMode = (camMode + 1) % CAMS.length;
+  btnCam.textContent = `Kamera: ${CAMS[camMode]}`;
+  const free = CAMS[camMode] === 'Atas';
+  controls.enabled = free;
+  if (free) { controls.target.set(0, 0, 0); camera.position.set(0, 120, 90); setFov(36); }
+};
+function updateRace(dt) {
+  const P = raceParams();
+  if (race.crash) {
+    const c = race.crash;
+    c.t += dt;
+    c.vel.y -= 70 * dt;
+    car.position.addScaledVector(c.vel, dt);
+    if (car.position.y < 0.3) { car.position.y = 0.3; c.vel.multiplyScalar(0.55); c.vel.y = Math.abs(c.vel.y) * 0.35; c.spin.multiplyScalar(0.6); }
+    car.rotation.x += c.spin.x * dt; car.rotation.y += c.spin.y * dt; car.rotation.z += c.spin.z * dt;
+    if (c.t > 2.6) { race.crash = null; race.v = 0; race.s = TR.straight / 2; race.dist = 0; race.lapT = 0; race.slip = race.side = 0; placeCar(); }
+    return;
+  }
+  if (race.on) race.v = Math.min(P.vMax, race.v + P.acc * dt * (1 - 0.5 * race.v / P.vMax));
+  else race.v = Math.max(0, race.v - 40 * dt);
+  race.s += race.v * dt;
+  if (race.on) {
+    race.lapT += dt;
+    race.dist += race.v * dt;
+    if (race.dist >= TRACK_LEN) {
+      race.dist -= TRACK_LEN;
+      race.lap++;
+      const rec = race.best === null || race.lapT < race.best;
+      if (rec) race.best = race.lapT;
+      toast(`LAP ${race.lap} · ${race.lapT.toFixed(2)} detik${rec ? ' · REKOR BARU!' : ''}`);
+      blip(rec ? 880 : 660, 0.15);
+      race.lapT = 0;
+    }
+  }
+  const t = trackAt(race.s);
+  const ratio = t.curve ? race.v * race.v / TR.r / P.limit : 0;
+  race.slip += (THREE.MathUtils.clamp((ratio - 0.55) / 0.45, 0, 1) - race.slip) * Math.min(1, dt * 5);
+  race.side += (race.slip * 1.1 - race.side) * Math.min(1, dt * 4);
+  if (ratio > 1) {
+    const out = new THREE.Vector3(t.x - t.cx, 0, t.z).normalize();
+    const fwd = new THREE.Vector3(Math.cos(t.yaw), 0, -Math.sin(t.yaw));
+    race.crash = { t:0, vel:fwd.multiplyScalar(race.v * 0.75).addScaledVector(out, race.v * 0.45).setY(22), spin:new THREE.Vector3(7, 3, 5) };
+    race.on = false; race.slip = race.side = 0;
+    btnRace.textContent = 'Mulai Balap';
+    toast('KELUAR LINTASAN! Terlalu kencang di tikungan. Turunkan kecepatan, atau pasang roller dan plate yang lebih mantap.');
+    blip(160, 0.4);
+    return;
+  }
+  placeCar();
+  if (race.slip > 0.25) driftEffects(race.slip, 0.4, car.rotation.y, true);
+}
+// Kamera balap: kejar (halus, FOV melebar saat kencang), kamera TV pinggir trek, onboard, atau bebas dari atas
+const TV_POSTS = [[-70, 20, 72], [70, 20, 72], [70, 22, -72], [-70, 22, -72], [0, 30, -84], [0, 26, 84]].map(p => new THREE.Vector3(...p));
+function updateFollowCam(dt, yawBase, speedFrac, style) {
+  camYaw += Math.atan2(Math.sin(yawBase - camYaw), Math.cos(yawBase - camYaw)) * Math.min(1, dt * 4);
+  const f = tmp.set(Math.cos(camYaw), 0, -Math.sin(camYaw));
+  const cy = car.position.y;
+  if (style === 'Kejar') {
+    tmp2.copy(car.position).addScaledVector(f, -22 - 4 * speedFrac);
+    tmp2.y = cy + 8.5;
+    camera.position.lerp(tmp2, Math.min(1, dt * 6));
+    camera.lookAt(car.position.x + f.x * 12, cy + 2.2, car.position.z + f.z * 12);
+    setFov(camera.fov + (52 + 16 * speedFrac - camera.fov) * Math.min(1, dt * 3));
+  } else if (style === 'Onboard') {
+    camera.position.copy(car.position).addScaledVector(f, 1.5);
+    camera.position.y = cy + 6.4;
+    camera.lookAt(car.position.x + f.x * 30, cy + 2, car.position.z + f.z * 30);
+    setFov(camera.fov + (68 + 12 * speedFrac - camera.fov) * Math.min(1, dt * 3));
+  } else if (style === 'TV') {
+    let best = TV_POSTS[0];
+    for (const p of TV_POSTS) if (p.distanceTo(car.position) < best.distanceTo(car.position)) best = p;
+    camera.position.copy(best);
+    camera.lookAt(car.position.x, cy + 2, car.position.z);
+    const d = best.distanceTo(car.position);
+    setFov(THREE.MathUtils.clamp(2 * Math.atan(13 / d) * 180 / Math.PI, 9, 40));
+  }
+}
+
+// =====================================================================
+// STUDIO: mengemudi bebas dengan WASD (mode bebas, dengan drift)
+// =====================================================================
+const keys = {};
+const drive = { active:false, follow:true, h:0, vel:new THREE.Vector3(), steer:0, slip:0, vF:0 };
+const DRIVE_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'];
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+  keys[e.code] = true;
+  if (mode !== 'studio') return;
+  if (DRIVE_KEYS.includes(e.code)) { e.preventDefault(); startDrive(); }
+  if (e.code === 'KeyR') stopDrive(true);
+  if (e.code === 'KeyV' && drive.active) {
+    drive.follow = !drive.follow;
+    controls.enabled = !drive.follow;
+    if (!drive.follow) { controls.target.copy(car.position); setFov(36); }
+  }
+});
+addEventListener('keyup', e => { keys[e.code] = false; });
+addEventListener('blur', () => { for (const k in keys) keys[k] = false; });
+function startDrive() {
+  if (drive.active) return;
+  if (invalid()) { toast('Rakitan belum valid. Perbaiki part yang tidak cocok dulu.'); return; }
+  parts.forEach(p => p.exT = 0);
+  btnExplode.classList.remove('on');
+  ensureAudio();
+  Object.assign(drive, { active:true, follow:true, h:car.rotation.y, steer:0, slip:0, vF:0 });
+  drive.vel.set(0, 0, 0);
+  camYaw = drive.h;
+  controls.enabled = false;
+  controls.autoRotate = false; btnSpin.classList.remove('on');
+  document.body.classList.add('driving');
+}
+function stopDrive(backToTable) {
+  const was = drive.active;
+  drive.active = false;
+  document.body.classList.remove('driving');
+  if (was && backToTable) {
+    resetCar();
+    turn.rotation.y = 0;
+    clearSkids();
+    controls.enabled = true;
+    controls.target.set(0, 3, 0);
+    camGoal = new THREE.Vector3(...POVS['3/4']);
+    setFov(36);
+  }
+}
+function driveParams() {
+  const st = stats(config);
+  return { vMax:20 + st.speed * 0.6, acc:14 + st.accel * 0.5, grip:4 + st.corner * 0.06 + st.stable * 0.02 };
+}
+const fwdV = new THREE.Vector3(), sideV = new THREE.Vector3();
+function updateDrive(dt) {
+  const P = driveParams();
+  const up = keys.KeyW || keys.ArrowUp, down = keys.KeyS || keys.ArrowDown;
+  const left = keys.KeyA || keys.ArrowLeft, right = keys.KeyD || keys.ArrowRight, hand = keys.Space;
+  drive.steer += ((left ? 1 : 0) - (right ? 1 : 0) - drive.steer) * Math.min(1, dt * 7);
+  // Arah hadap berubah dulu, kecepatan menyusul sesuai cengkeraman ban -> muncul selip (drift)
+  const vF0 = drive.vel.dot(fwdV.set(Math.cos(drive.h), 0, -Math.sin(drive.h)));
+  drive.h += drive.steer * 2.3 * (hand ? 1.45 : 1) * THREE.MathUtils.clamp(vF0 / 14, -1, 1) * dt;
+  fwdV.set(Math.cos(drive.h), 0, -Math.sin(drive.h));
+  sideV.set(Math.sin(drive.h), 0, Math.cos(drive.h));
+  let vF = drive.vel.dot(fwdV), vL = drive.vel.dot(sideV);
+  if (up) vF += P.acc * (1 - Math.max(0, vF) / P.vMax) * dt;
+  if (down) vF -= (vF > 0 ? 45 : 16) * dt;
+  if (!up && !down) vF -= Math.sign(vF) * Math.min(Math.abs(vF), 7 * dt);
+  if (hand) vF -= Math.sign(vF) * Math.min(Math.abs(vF), 9 * dt);
+  vF = Math.max(vF, -P.vMax * 0.35);
+  vL *= Math.exp(-(hand ? 1.1 : P.grip) * dt);
+  drive.vel.copy(fwdV).multiplyScalar(vF).addScaledVector(sideV, vL);
+  car.position.addScaledVector(drive.vel, dt);
+  const d = Math.hypot(car.position.x, car.position.z);
+  if (d > 170) { car.position.x *= 170 / d; car.position.z *= 170 / d; drive.vel.multiplyScalar(-0.3); }
+  const floorY = d < 15.2 ? 0.3 : 0;
+  car.position.y = floorY;
+  drive.vF = vF;
+  drive.slip += (THREE.MathUtils.clamp((Math.abs(vL) - 3) / 10, 0, 1) - drive.slip) * Math.min(1, dt * 8);
+  car.rotation.set(THREE.MathUtils.clamp(-vL * 0.006, -0.07, 0.07), drive.h, 0);
+  for (const p of parts) if (p.slot === 'wheel' && p.base.x > 0) p.g.rotation.y = drive.steer * 0.4;
+  wheelSpinners.forEach(w => w.rotation.z -= vF / pick(config).wheel.r * dt);
+  if (drive.slip > 0.15) driftEffects(drive.slip, floorY, drive.h, false);
+}
+const driveHud = document.getElementById('driveHud');
+
+// =====================================================================
+// CATATAN PART (callout di samping, tidak menutupi mobil)
+// =====================================================================
+const SLOT_NAME = { chassis:'Sasis', motor:'Dinamo', gear:'Gear', battery:'Baterai', wheel:'Roda ×4', roller:'Roller ×4', plate:'Bumper / Plate', body:'Body' };
+const svgEl = document.getElementById('callouts');
+const notes = {};
+for (const k of SLOT_KEYS) { const d = document.createElement('div'); d.className = 'note'; document.body.appendChild(d); notes[k] = d; }
+let notesOn = true;
+const btnNotes = document.getElementById('btnNotes');
+btnNotes.onclick = () => { notesOn = !notesOn; btnNotes.classList.toggle('on', notesOn); btnNotes.textContent = `Catatan Part: ${notesOn ? 'Tampil' : 'Sembunyi'}`; };
+function updateNotes() { for (const k of SLOT_KEYS) notes[k].innerHTML = `${SLOT_NAME[k]}<small>${opt(k, config[k]).name}</small>`; }
+const cornerV = new THREE.Vector3(), anchorV = new THREE.Vector3();
+function toScreen(v) { v.project(camera); return [(v.x + 1) / 2 * innerWidth, (1 - v.y) / 2 * innerHeight]; }
+function updateCallouts(e) {
+  const show = notesOn && e > 0.6 && mode !== 'lintasan';
+  for (const k of SLOT_KEYS) notes[k].style.opacity = show ? 1 : 0;
+  if (!show) { if (svgEl.childElementCount) svgEl.innerHTML = ''; return; }
+  box.setFromObject(car);
+  let minX = Infinity, maxX = -Infinity;
+  for (let i = 0; i < 8; i++) {
+    cornerV.set(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z);
+    const [sx] = toScreen(cornerV);
+    minX = Math.min(minX, sx); maxX = Math.max(maxX, sx);
+  }
+  // Titik tunjuk tiap slot: part slot itu yang paling dekat ke kamera
+  const items = [];
+  for (const k of SLOT_KEYS) {
+    let bd = Infinity;
+    for (const p of parts) {
+      if (p.slot !== k) continue;
+      box.setFromObject(p.g).getCenter(tmp);
+      const d = tmp.distanceTo(camera.position);
+      if (d < bd) { bd = d; anchorV.copy(tmp); }
+    }
+    if (bd === Infinity) continue;
+    const [x, y] = toScreen(anchorV);
+    items.push({ k, x, y });
+  }
+  const wide = innerWidth > 800;
+  const leftLim = wide ? 360 : 8, rightLim = wide ? innerWidth - 330 : innerWidth - 8;
+  const mid = (minX + maxX) / 2;
+  let html = '';
+  for (const side of [-1, 1]) {
+    const list = items.filter(i => side < 0 ? i.x < mid : i.x >= mid).sort((a, b) => a.y - b.y);
+    const col = side < 0 ? Math.max(leftLim + 160, Math.min(mid - 40, minX - 30)) : Math.min(rightLim - 160, Math.max(mid + 40, maxX + 30));
+    const ys = list.map(i => i.y);
+    for (let i = 1; i < ys.length; i++) ys[i] = Math.max(ys[i], ys[i - 1] + 42);
+    const over = (ys.length ? ys[ys.length - 1] : 0) - (innerHeight - (wide ? 200 : 30));
+    if (over > 0) for (let i = 0; i < ys.length; i++) ys[i] -= over;
+    for (let i = 0; i < ys.length; i++) ys[i] = Math.max(ys[i], 120 + i * 42);
+    list.forEach((it, i) => {
+      const n = notes[it.k], y = ys[i];
+      n.style.top = `${y}px`;
+      if (side < 0) { n.style.left = ''; n.style.right = `${innerWidth - col}px`; }
+      else { n.style.right = ''; n.style.left = `${col}px`; }
+      const ex = col - side * 16;
+      html += `<polyline points="${col},${y} ${ex},${y} ${it.x},${it.y}" fill="none" stroke="#f0c020" stroke-width="1.6" stroke-opacity=".95"/>`
+            + `<circle cx="${it.x}" cy="${it.y}" r="4" fill="#ffe27a" stroke="#1a1a1a" stroke-width="1.2"/>`;
+    });
+  }
+  svgEl.innerHTML = html;
+}
+
+// =====================================================================
+// INTERAKSI: pilih part, exploded view, dan rakit manual per part
+// =====================================================================
+let selected = null;
+function select(p) {
+  if (selected) selected.meshes.forEach(m => m.material.emissive?.setHex(m.userData.bad ? 0x660000 : 0));
+  selected = p === selected ? null : p;
+  const info = document.getElementById('info');
+  if (!selected) { info.style.display = 'none'; return; }
+  selected.meshes.forEach(m => m.material.emissive?.setHex(0x553300));
+  const o = opt(selected.slot, config[selected.slot]);
+  const prob = check(config).filter(r => r.slots.includes(selected.slot)).map(r => r.msg);
+  document.getElementById('infoTitle').textContent = selected.name;
+  document.getElementById('infoText').innerHTML = o.desc + (prob.length ? `<br><br><span style="color:#ff8a80">${prob.join('<br>')}</span>` : '');
+  info.style.display = 'block';
+}
+
+// Urutan rakit yang masuk akal: part apa saja yang harus terpasang sebelum part ini
+function requires(p) {
+  const main = parts[0];
+  if (p === main) return [];
+  const by = pred => parts.filter(q => q !== p && pred(q));
+  if (p.slot === 'body') return by(() => true);
+  const req = [main];
+  if (p.slot === 'wheel') req.push(...by(q => /^As |^Bearing/.test(q.name)));
+  if (p.slot === 'roller') { const end = p.name.includes('Depan') ? 'Depan' : 'Belakang'; req.push(...by(q => q.slot === 'plate' && q.name.endsWith(end))); }
+  if (p.slot === 'motor') req.push(...by(q => q.name === 'Dudukan Dinamo'));
+  if (p.slot === 'gear') req.push(...by(q => q.slot === 'motor'));
+  if (p.name === 'Gear Cover') req.push(...by(q => q.slot === 'gear' || q.slot === 'motor'));
+  if (p.name === 'Penahan Baterai') req.push(...by(q => q.slot === 'battery'));
+  if (p.name === 'Tombol Saklar') req.push(...by(q => q.name === 'Penutup Saklar'));
+  return req;
+}
+const uniqNames = list => [...new Set(list.map(q => q.name.replace(/ (Depan|Belakang)? ?(Kiri|Kanan)$/, '')))].slice(0, 3).join(', ');
+function toggleInstall(p) {
+  if (p.exT === 1) {
+    const miss = requires(p).filter(q => q.exT === 1);
+    if (miss.length) { toast(`Belum bisa dipasang. Pasang dulu: ${uniqNames(miss)}`); blip(180, 0.18); return; }
+    p.exT = 0;
+    blip(720, 0.08);
+    if (parts.every(q => q.exT === 0)) { toast('Rakitan lengkap! Semua part sudah terpasang.'); btnExplode.classList.remove('on'); blip(990, 0.25); }
+  } else {
+    const deps = parts.filter(q => q.exT === 0 && q !== p && requires(q).includes(p));
+    if (deps.length) { toast(`Belum bisa dilepas. Lepas dulu: ${uniqNames(deps)}`); blip(180, 0.18); return; }
+    p.exT = 1;
+    blip(420, 0.08);
+  }
+}
+const ray = new THREE.Raycaster(), ptr = new THREE.Vector2();
+let downAt = null;
+renderer.domElement.addEventListener('pointerdown', e => downAt = [e.clientX, e.clientY]);
+renderer.domElement.addEventListener('pointerup', e => {
+  if (mode === 'lintasan' || drive.active || !downAt || Math.hypot(e.clientX - downAt[0], e.clientY - downAt[1]) > 5) return;
+  ptr.set(e.clientX / innerWidth * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ptr, camera);
+  const hit = ray.intersectObjects(car.children, true).find(h => h.object.userData.part);
+  if (!hit) return;
+  const p = hit.object.userData.part;
+  // Saat ada part yang terbongkar, klik = pasang / lepas part itu
+  if (parts.some(q => q.exT === 1)) toggleInstall(p);
+  select(p);
+});
+
+let motorOn = false, motorSpeed = 0;
+const btnExplode = document.getElementById('btnExplode');
+function pullCamera(out) {
+  const dir = camera.position.clone().sub(controls.target);
+  dir.y = Math.max(dir.y, 8);
+  camGoal = dir.normalize().multiplyScalar(out ? 50 : 41);
+}
+btnExplode.onclick = () => {
+  const on = !parts.some(p => p.exT === 1);
+  parts.forEach(p => p.exT = on ? 1 : 0);
+  btnExplode.classList.toggle('on', on);
+  pullCamera(on);
+};
+document.getElementById('btnManual').onclick = () => {
+  if (mode === 'lintasan') return;
+  stopDrive(true);
+  parts.forEach(p => p.exT = 1);
+  btnExplode.classList.add('on');
+  pullCamera(true);
+  toast('Rakit manual: klik part satu per satu untuk memasangnya. Urutannya harus masuk akal (contoh: baterai sebelum penahannya, body terakhir).');
+};
+const btnSpin = document.getElementById('btnSpin');
+btnSpin.onclick = () => { controls.autoRotate = !controls.autoRotate; btnSpin.classList.toggle('on', controls.autoRotate); };
+const ORDER = ['chassis', 'motor', 'gear', 'battery', 'wheel', 'plate', 'roller', 'body'];
+document.getElementById('btnBuild').onclick = () => {
+  parts.forEach(p => { p.exT = 0; p.ex = 0; p.local = 1 + ORDER.indexOf(p.slot) * 0.55; });
+  btnExplode.classList.remove('on');
+};
+const BODY_COLORS = [0x1d4fd8, 0xd81e1e, 0x16171b, 0x13a35a, 0xffb300, 0x7b2fd0, 0xf2f2f2];
+document.getElementById('btnColor').onclick = () => {
+  const i = (BODY_COLORS.indexOf(livery.p) + 1) % BODY_COLORS.length;
+  livery = { ...livery, p:BODY_COLORS[i] };
+  save();
+  for (const m of bodyMats) {
+    if (m.userData.liveryModel) { m.map = modelLiveryTex(livery); m.needsUpdate = true; }
+    else m.color.setHex(livery.p);
+  }
+};
+
+// =====================================================================
+// SUARA: rengekan dinamo + dengung gear + desis sikat karbon, dan decit ban
+// =====================================================================
+let audio, snd;
+function noiseBuffer() {
+  const b = audio.createBuffer(1, audio.sampleRate * 2, audio.sampleRate);
+  const d = b.getChannelData(0);
+  for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  return b;
+}
+function ensureAudio() {
+  if (audio) return;
+  audio = new AudioContext();
+  const master = audio.createGain(); master.gain.value = 0.9; master.connect(audio.destination);
+  const whine = audio.createOscillator(); whine.type = 'sawtooth';       // putaran rotor
+  const gearHum = audio.createOscillator(); gearHum.type = 'square';     // gigitan gear
+  const wobble = audio.createOscillator(); wobble.frequency.value = 27;  // getaran kecil komutator
+  const wobbleAmt = audio.createGain(); wobbleAmt.gain.value = 5;
+  wobble.connect(wobbleAmt); wobbleAmt.connect(whine.frequency);
+  const brush = audio.createBufferSource(); brush.buffer = noiseBuffer(); brush.loop = true;
+  const brushBp = audio.createBiquadFilter(); brushBp.type = 'bandpass'; brushBp.Q.value = 1.4;
+  const brushG = audio.createGain(); brushG.gain.value = 0.5;
+  const gearG = audio.createGain(); gearG.gain.value = 0.25;
+  const hp = audio.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 160;
+  const peak = audio.createBiquadFilter(); peak.type = 'peaking'; peak.Q.value = 5; peak.gain.value = 9;
+  const lp = audio.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 6000;
+  const motorG = audio.createGain(); motorG.gain.value = 0;
+  whine.connect(hp); gearHum.connect(gearG); gearG.connect(hp);
+  brush.connect(brushBp); brushBp.connect(brushG); brushG.connect(hp);
+  hp.connect(peak); peak.connect(lp); lp.connect(motorG); motorG.connect(master);
+  const tire = audio.createBufferSource(); tire.buffer = brush.buffer; tire.loop = true;
+  const tireBp = audio.createBiquadFilter(); tireBp.type = 'bandpass'; tireBp.frequency.value = 2300; tireBp.Q.value = 7;
+  const tireG = audio.createGain(); tireG.gain.value = 0;
+  tire.connect(tireBp); tireBp.connect(tireG); tireG.connect(master);
+  [whine, gearHum, wobble, brush, tire].forEach(n => n.start());
+  snd = { whine, gearHum, brushBp, peak, motorG, tireBp, tireG };
+}
+function setMotorSound(level, rpm) {
+  if (!snd) return;
+  const t = audio.currentTime, f = 140 + 1300 * rpm;
+  snd.whine.frequency.setTargetAtTime(f, t, 0.06);
+  snd.gearHum.frequency.setTargetAtTime(f * 0.42, t, 0.06);
+  snd.brushBp.frequency.setTargetAtTime(f * 3.2, t, 0.06);
+  snd.peak.frequency.setTargetAtTime(f * 2, t, 0.06);
+  snd.motorG.gain.setTargetAtTime(0.045 * level * (0.35 + 0.65 * rpm), t, 0.05);
+}
+function setScreech(v) {
+  if (!snd) return;
+  const t = audio.currentTime;
+  snd.tireG.gain.setTargetAtTime(0.16 * v, t, 0.04);
+  snd.tireBp.frequency.setTargetAtTime(2000 + 700 * Math.sin(t * 9), t, 0.05);
+}
+function blip(freq, dur) {
+  if (!audio) return;
+  const o = audio.createOscillator(), g = audio.createGain();
+  o.frequency.value = freq; g.gain.value = 0.08;
+  g.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + dur);
+  o.connect(g); g.connect(audio.destination); o.start(); o.stop(audio.currentTime + dur);
+}
+const btnMotor = document.getElementById('btnMotor');
+function toggleMotor() {
+  ensureAudio();
+  motorOn = !motorOn;
+  btnMotor.classList.toggle('on', motorOn);
+  btnMotor.textContent = motorOn ? 'Matikan Dinamo' : 'Nyalakan Dinamo';
+}
+btnMotor.onclick = toggleMotor;
+document.addEventListener('pointerdown', ensureAudio, { once:true });
+
+// =====================================================================
+// LOOP
+// =====================================================================
+const ease = t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const tmp = new THREE.Vector3(), tmp2 = new THREE.Vector3(), box = new THREE.Box3();
+const clock = new THREE.Clock();
+const manualBar = document.getElementById('manualBar');
+const $ = id => document.getElementById(id);
+
+function frame() {
+  const dt = Math.min(clock.getDelta(), 0.05);
+  // Tiap part punya status bongkar sendiri (ex), sehingga bisa dipasang satu per satu
+  let e = 0, installed = 0;
+  for (const p of parts) {
+    p.ex += (p.exT - p.ex) * Math.min(1, dt * 3.2);
+    if (p.local > 0) p.local = Math.max(0, p.local - dt * 1.6);
+    const k = Math.max(ease(THREE.MathUtils.clamp(p.ex, 0, 1)), ease(Math.min(1, p.local)) * 1.3);
+    // Semua part diangkat 3 satuan ekstra supaya tidak ada yang tembus ke bawah lantai
+    p.g.position.copy(p.base).addScaledVector(p.explode, k);
+    p.g.position.y += 3 * k;
+    e = Math.max(e, ease(THREE.MathUtils.clamp(p.ex, 0, 1)));
+    if (p.exT === 0) installed++;
+  }
+  const P = pick(config), power = P.motor.spd / 10;
+  let vol = 0, rpm = 0, screech = 0;
+
+  if (mode === 'lintasan') {
+    updateRace(dt);
+    const vMax = raceParams().vMax;
+    rpm = race.crash ? 0 : race.v / vMax;
+    vol = race.v > 0.5 ? 1 : 0;
+    screech = race.slip;
+    wheelSpinners.forEach(w => w.rotation.z -= race.v / P.wheel.r * dt);
+    if (trackAt(race.s).curve) spinners.forEach(([o, axis]) => { if (axis === 'y') o.rotation.y += race.v * 0.3 * dt; });
+    $('hLap').textContent = race.lap;
+    $('hTime').textContent = race.lapT.toFixed(2);
+    $('hBest').textContent = race.best === null ? '—' : race.best.toFixed(2);
+    $('hSpd').textContent = Math.round(race.v * 0.8);
+  } else if (mode === 'studio' && drive.active) {
+    updateDrive(dt);
+    const vMax = driveParams().vMax;
+    rpm = Math.min(1, Math.abs(drive.vF) / vMax);
+    vol = 1;
+    screech = drive.slip;
+    driveHud.innerHTML = `<b>${Math.round(Math.abs(drive.vF) * 0.8)}</b> KM/JAM${drive.slip > 0.35 ? '<i>DRIFT!</i>' : ''}`;
+  } else {
+    controls.target.y += ((3 + 5.5 * e) - controls.target.y) * Math.min(1, dt * 4);
+    if (camGoal) {
+      tmp2.copy(camGoal).multiplyScalar(1 + 0.5 * e);
+      tmp2.y += controls.target.y - 3;
+      camera.position.lerp(tmp2, Math.min(1, dt * 4));
+      if (camera.position.distanceTo(tmp2) < 0.05) camGoal = null;
+    }
+    motorSpeed += ((motorOn ? 1 : 0) - motorSpeed) * Math.min(1, dt * 1.5);
+    if (motorSpeed > 0.001) {
+      spinners.forEach(([o, axis, sp]) => o.rotation[axis] += sp * motorSpeed * power * dt);
+      wheelSpinners.forEach(w => w.rotation.z -= 14 * motorSpeed * power * (4 / P.gear.ratio) * dt);
+      car.position.y = GROUND + Math.sin(clock.elapsedTime * 60) * 0.02 * motorSpeed;
+    }
+    rpm = motorSpeed * power;
+    vol = motorSpeed;
+    if (mode === 'studio') { turn.rotation.y += dt * 0.25; car.rotation.y = turn.rotation.y; }
+  }
+  setMotorSound(vol, rpm);
+  setScreech(screech);
+  updateFx(dt);
+
+  if (mode === 'lintasan' && CAMS[camMode] !== 'Atas') updateFollowCam(dt, race.yaw, rpm, CAMS[camMode]);
+  else if (mode === 'studio' && drive.active && drive.follow) updateFollowCam(dt, drive.h, rpm, 'Kejar');
+  else controls.update();
+  renderer.render(scene, camera);
+  updateCallouts(e);
+
+  const manual = mode !== 'lintasan' && parts.some(p => p.exT === 1);
+  manualBar.style.opacity = manual ? 1 : 0;
+  if (manual) manualBar.innerHTML = `RAKIT MANUAL · <b>${installed} / ${parts.length}</b> PART TERPASANG · KLIK PART UNTUK PASANG / LEPAS`;
+  requestAnimationFrame(frame);
+}
+
+function layout() {
+  camera.aspect = innerWidth / innerHeight;
+  if (innerWidth > 800) camera.setViewOffset(innerWidth, innerHeight, 15, 70, innerWidth, innerHeight);
+  else camera.clearViewOffset();
+  camera.updateProjectionMatrix();
+  renderer.setSize(innerWidth, innerHeight);
+}
+layout();
+addEventListener('resize', layout);
+// =====================================================================
+// SEMBUNYIKAN UI PER PANEL (tombol × di tiap panel, menu "UI", tombol H)
+// =====================================================================
+const UI_PANELS = { brand:'Judul', modes:'Pilihan mode', garage:'Panel part', side:'Panel mesin', presets:'Kartu mesin', hint:'Petunjuk kontrol', hud:'Papan waktu balap', trackCtl:'Tombol balap', note:'Kredit' };
+let uiHidden = {};
+try { uiHidden = JSON.parse(localStorage.getItem('m4wd-ui') || '{}'); } catch {}
+const uiMenu = document.getElementById('uiMenu');
+function applyUi() {
+  for (const id of Object.keys(UI_PANELS)) document.getElementById(id).classList.toggle('ui-hidden', !!uiHidden[id]);
+  document.getElementById('callouts').classList.toggle('ui-hidden', !!uiHidden.notes);
+  document.querySelectorAll('.note').forEach(n => n.classList.toggle('ui-hidden', !!uiHidden.notes));
+  try { localStorage.setItem('m4wd-ui', JSON.stringify(uiHidden)); } catch {}
+  renderUiMenu();
+}
+function renderUiMenu() {
+  const items = { ...UI_PANELS, notes:'Catatan part (exploded)' };
+  uiMenu.innerHTML = Object.entries(items).map(([id, label]) =>
+    `<label><input type="checkbox" data-id="${id}" ${uiHidden[id] ? '' : 'checked'}> ${label}</label>`).join('')
+    + '<div class="row"><button id="uiAllOff">Sembunyikan semua</button><button id="uiAllOn">Tampilkan semua</button></div>'
+    + '<small>Tombol H: sembunyikan / tampilkan semua UI</small>';
+  uiMenu.querySelectorAll('input').forEach(cb => cb.onchange = () => { uiHidden[cb.dataset.id] = !cb.checked; applyUi(); });
+  document.getElementById('uiAllOff').onclick = () => setAllUi(true);
+  document.getElementById('uiAllOn').onclick = () => setAllUi(false);
+}
+function setAllUi(hide) {
+  uiHidden = hide ? Object.fromEntries([...Object.keys(UI_PANELS), 'notes'].map(k => [k, true])) : {};
+  applyUi();
+}
+for (const id of Object.keys(UI_PANELS)) {
+  const b = document.createElement('button');
+  b.className = 'hidebtn';
+  b.title = `Sembunyikan ${UI_PANELS[id].toLowerCase()}`;
+  b.textContent = '×';
+  b.onclick = ev => { ev.stopPropagation(); uiHidden[id] = true; applyUi(); };
+  document.getElementById(id).appendChild(b);
+}
+document.getElementById('btnUi').onclick = () => uiMenu.classList.toggle('open');
+addEventListener('keydown', e => {
+  if (e.code !== 'KeyH' || e.target.tagName === 'SELECT' || e.target.tagName === 'INPUT') return;
+  setAllUi(!Object.keys(UI_PANELS).every(k => uiHidden[k]));
+});
+applyUi();
+
+// Alat ukur performa: buka index.html?debug lalu pakai window.__g di konsol
+if (location.search.includes('debug')) window.__g = { THREE, renderer, scene, camera, controls, car, get parts() { return parts; } };
+
+// Simpanan lama bisa berisi id part yang sudah tidak ada; kembalikan ke preset 1 bila begitu
+if (!SLOT_KEYS.every(k => opt(k, config[k]))) { config = { ...PRESETS[0].cfg }; livery = { ...PRESETS[0].liv }; presetIdx = 0; }
+buildCar(config, livery, SLOT_KEYS);
+parts.forEach(p => p.local = 1 + ORDER.indexOf(p.slot) * 0.35);
+renderPanel();
+frame();
+// Model 3D detail dimuat di belakang; setelah siap, mobil dirakit ulang memakai model itu
+loadModels()
+  .then(() => { buildCar(config, livery, []); renderPanel(); })
+  .catch(err => { console.error(err); toast('Model 3D detail gagal dimuat (perlu internet untuk dekoder Draco). Memakai versi kode.'); });
+</script>
+</body>
+</html>

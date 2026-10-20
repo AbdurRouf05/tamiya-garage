@@ -1,0 +1,9 @@
+{"out": "C:/Users/arack/AppData/Local/Temp/claude/D--coding-cozy-village/bb2493d4-aa52-4045-a5e2-0a655a382ec3/scratchpad/wf/rear_bumper/renders", "prefix": "before",
+ "parts": [{"name": "chassis-super-1", "color": [0.7,0.7,0.75,1]},
+           {"name": "chassis-super-1-rear-bumper", "color": [0.95,0.45,0.1,1]}],
+ "views": [{"name":"top","dir":"top","center":[39,100,12],"scale":80,"res":[1200,1200]},
+           {"name":"bottom","dir":"bottom","center":[39,100,12],"scale":80,"res":[1200,1200]},
+           {"name":"side","dir":"side","center":[39,105,12],"scale":60,"res":[1500,750]},
+           {"name":"rear","dir":"rear","center":[39,105,12],"scale":80,"res":[1500,750]},
+           {"name":"iso","dir":"iso","vec":[1,1.2,0.9],"center":[39,105,12],"scale":90,"res":[1200,1000]},
+           {"name":"full_top","dir":"top","center":[39,65,12],"scale":145,"res":[1000,1400]}]}
