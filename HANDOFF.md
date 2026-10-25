@@ -1,4 +1,4 @@
-# Serah-terima: Garasi Mini 4WD (status 20 Okt 2026)
+# Serah-terima: Garasi Mini 4WD (status 24 Okt 2026)
 
 ## Ringkas
 `index.html` = simulator rakit mini 4WD satu file (Three.js r160 dari CDN). Ada mode Garasi/Studio/Lintasan,
@@ -8,36 +8,62 @@ Buka dengan klik dua kali, atau `python -m http.server 8765` lalu buka `localhos
 (`?debug` memunculkan `window.__g` = {THREE, renderer, scene, camera, controls, car, parts}).
 
 ## Struktur
-- `models/source/*` = file asli (JANGAN diubah). `models/archives/*.zip` = unduhan asli. Katalog dan lisensi: `models/README.md`.
+- `models/source/*` = file asli (JANGAN diubah). `models/archives/*.zip` = unduhan asli. Katalog, lisensi, dan perintah
+  konversi ulang super1.glb: `models/README.md`.
 - `models/web/*.glb` + `*.js` (GLB base64 supaya jalan di file://): super1, body-aero, body-magnum, fa130.
 - `models/work/` = hasil konversi mentah (magnum_raw.glb, fa130_raw.glb).
-- `tools/` = skrip konversi dan ukur. Yang penting: `blender_convert.py` (STL→GLB; mendukung koreksi per part
-  `"file|nama|target|dx,dy,dz;rx,ry,rz;px,py,pz"` dalam mm), `cad_to_glb.py` (STEP/IGES, butuh cascadio),
-  `blender_magnum.py`, `blender_fa130.py`, `body_clearance.py`, `blender_view_super1.py`, `glb_to_js.py`.
+- `tools/` = skrip konversi dan ukur. Yang penting: `blender_convert.py` (STL→GLB; koreksi per part
+  `"file|nama|target|dx,dy,dz;rx,ry,rz;px,py,pz"` dalam mm), `cad_to_glb.py`, `blender_magnum.py`, `blender_fa130.py`,
+  `body_clearance.py` (body sayap vs part, sudah memakai pemetaan + titik pasang baru), `glb_to_js.py`.
+- `tools/fit_wip/rear_bumper/`: `stlio.py` (baca STL + cache .npy di `cache/`, di-ignore git), `slicer.py` (potongan bidang,
+  lingkaran), `voxel.py`, `check_fit.py [part] dx dy dz [h] [lawan]` (overlap/kontak part vs sasis atau part lain).
+  `tools/fit_wip/assembly/`: `fit_all.py` (uji T0 + pencarian FFT semua part), `gear_free.py` (ruang bebas tiap poros gear).
+  Skrip lama di `tools/fit_wip/<topik>/` lain masih memakai path `D:\coding\tamiya-garage` dan pemetaan lama.
 - Blender: `D:\setup\blender\blender.exe --background --factory-startup --python <skrip> -- <arg>`.
 
-## Fakta ukur (wajib dipakai)
-- Sasis Super-1 (mm, Z atas): depan = Y kecil. **Lubang as Y=30 (depan) & Y=110 (belakang), Z=15,1**; garis tengah X=39; dinding samping X≈18,3 & 59,7.
-- Pemetaan ke simulator (s=0,1346; R = jari-jari roda 1,75): `x=-(Y-70)s`, `y=(Z-15,1)s+R`, `z=-(X-39)s`.
-  super1.glb sudah diekspor dengan titik asal (39,70,15,1).
-- File bearing Printables TIDAK di posisi rakit (offset 14,9 mm). **Dugaan kuat: semua part pelengkap
-  (bumper belakang, gear cover, dudukan dinamo, penutup saklar, tombol, penahan baterai) tergeser bersama
-  ±(+1, +14…15, 0) mm terhadap sasis** — pencarian voxel agen menemukan kandidat bumper belakang (0,977, 13,96, 0).
-  Semua part pelengkap berpusat X=38, sasis X=39. BELUM diverifikasi per part.
+## Fakta ukur (wajib dipakai; diukur ulang 24 Okt, fakta lama Y=30/110 SALAH)
+- Sasis Super-1 (mm, Z atas): depan = Y kecil. **Lubang as Y=29,055 (depan) & Y=108,515 (belakang), Z=15,095**
+  (lubang r 2,1 di dinding X≈18,3–19,3 & 58,8–59,7; ceruk bearing r 2,95 di sisi luar). Jarak sumbu 79,46 mm. Garis tengah X=39.
+- Pemetaan ke simulator: s = 10,8/79,46 = 0,135917, R = jari-jari roda: `x=-(Y-68,785)s`, `y=(Z-15,095)s+R`, `z=-(X-39)s`.
+  super1.glb diekspor dengan titik asal (39; 68,785; 15,095), jadi kedua lubang as tepat di x=±5,4 (as roda).
+- **Semua part pelengkap STL berada di rangka rakitan yang tergeser T0 = (+0,977; +13,96; 0) mm dari sasis** (pembuatnya
+  hanya memindahkan sasis ke titik nol XY). Bukti: lubang sekrup bumper (41,41; 97,87)+T0 = lubang lantai sasis (42,39; 111,83);
+  bearing Ø5,9 + T0 tepat di ceruknya; overlap voxel ke sasis turun 383/72/21/42/6 → ≤ 4 mm³ (bumper/dudukan/penutup
+  saklar/tombol/penahan); pencarian FFT ±2,5 mm memilih tepat T0 untuk gear cover dan bearing. Sisa overlap kecil ada di klip.
+- Titik pasang (mm, sesudah T0):
+  - Sumbu dinamo (Y 100,32; Z 17,69), cincin dudukan r dalam 10,05. Muka dalam dinding dudukan sisi gear X 32,357
+    (lubang bushing Z 14,5–21). Kaleng berdiri: sisi 20 mm tegak, sisi datar menghadap depan/belakang, nyaris menyentuh as.
+  - Poros counter Ø1,5 (Y 104,30; Z 23,92), dari boss gear cover X≈19,5 sampai lubang dudukan X≈30,5. As belakang = poros spur.
+  - Bay baterai: lantai atas Z 6,76, dinding depan Y 36,97, belakang Y 90,92 (dinding depan dudukan). AA duduk di lantai:
+    pusat Z 14,01, Y 63,945, X 31,75/46,25.
+  - Tali penahan baterai di T0 ada di Z 18,795–19,295 (memotong baterai 2,5 mm), jadi dipasang di T0 + (0; 0; 2,5).
+  - Lubang roller: depan (X 4,47/73,56; Y 3,12) & cadangan (X 2,0/76,02; Y 6,26) r 1; bumper belakang (X 15,89/62,15; Y 133,18) r 2,75.
+- Model FA-130 (`models/web/fa130.glb`, skala 0,1346): **poros keluaran + boss di +z**, tutup belakang + tab terminal di −z;
+  kaleng z −2,086…+1,303; lebar 20 mm di x, sisi datar 15 mm di y (tab sampai y 1,22).
 
-## Masalah terbuka (dari user, belum diperbaiki)
-1. Bumper belakang, gear cover + gear, penutup saklar tidak terpasang benar ke sasis → cek dugaan offset di atas
-   per part dengan `tools/fit_wip/rear_bumper/check_fit.py dx dy dz` (laporkan overlap mm³ & kontak), lalu
-   konversi ulang super1.glb dengan koreksi per part.
-2. Gear spur (di as belakang, x −5,4) berada di LUAR gear cover → setelah gear cover benar, letakkan pinion/counter/spur di dalamnya.
-3. Baterai mencuat ±4,5 mm di bawah sasis (posisi sekarang = penahan_baterai.min.y − 0,92) → ukur lantai bay baterai, AA Ø14,5×50,5 mm.
-4. Dudukan dinamo bertabrakan dengan body → ukur ulang setelah part dipindah (body_clearance.py hanya untuk body sayap).
-5. Plate FRP: kalau tidak muat tanpa dipaksa, jangan dipakai.
-6. "Bundaran melayang" kemungkinan gear yang mencuat di luar gear cover (lihat no. 2).
-7. Survei aset: `models/source/racing-grabcad/Mini 4WD Racing.stp` (model lengkap) belum dikonversi per part.
-Skrip kerja agen yang terhenti: `tools/fit_wip/<topik>/` (hasil render/npz besar tidak ikut disalin).
+## Selesai 24 Okt
+1. Masalah lama no. 1: super1.glb dikonversi ulang, semua part pelengkap di posisi rakit (T0), titik asal & skala baru.
+2. No. 2 & 6: gear di poros aslinya di dalam gear cover (pinion di poros dinamo, counter dua tingkat, spur di as; jari-jari
+   saling bertaut, rasio diatur lewat pembagian counter kecil : spur). "Bundaran melayang" = cakram warna dinamo yang dulu
+   ditaruh di ujung poros karena model FA-130 dibalik (poros mengarah menjauhi gear). Sekarang tidak dibalik; untuk sasis
+   versi kode poros juga kini mengarah ke gear.
+3. No. 3: baterai duduk di lantai bay (dasar y 0,617 > dasar sasis 0,262), di antara dinding bay, tali penahan di atasnya.
+4. Roller Super-1 di lubang terukur (rumus lama berbasis bbox akan menaruh roller belakang 2 satuan di belakang lubangnya).
+5. Titik pasang ada di `mount` pada entri sasis `super1` (`index.html`), dipakai lewat `MT` di `buildCar`.
+6. Verifikasi: <diisi setelah workflow verifikasi selesai>
+
+## Masalah terbuka
+1. Body Magnum: atap sisi kiri belakang terlalu rendah. Gear cover dan dudukan dinamo menembus ±8–9 mm
+   (x −2,7…−4,8; z 1,7–2,0), sama besarnya dengan sebelum koreksi (uji peta tinggi body di browser). Body sayap aman
+   (`python tools/body_clearance.py 0.9 1.05 1.28 1.12` → 0,00). → naikkan/potong body Magnum lokal.
+2. Plate FRP: kalau tidak muat tanpa dipaksa, jangan dipakai. Plate belakang sekarang ada di lubang roller bumper; cek tabrakan dengan bumper.
+3. Survei aset: `models/source/racing-grabcad/Mini 4WD Racing.stp` (model lengkap) belum dikonversi per part.
+4. Kecil: model FA-130 masih skala 0,1346 (1 % lebih kecil dari sasis); tabung kait penahan baterai bersinggungan
+   0,5 mm dengan bibir dinding; struktur dalam gear cover (rusuk) tidak mencerminkan gear asli, jadi gear menembus rusuk
+   dalam (tak terlihat saat cover terpasang).
 
 ## Cara kerja hemat token (penting, kuota user terbatas)
-- Kerjakan SATU masalah per sesi, jangan jalankan workflow/banyak agen paralel (sebelumnya kena batas 5 jam).
+- Kerjakan SATU masalah per sesi; workflow/agen paralel hanya kalau diminta (sesi 24 Okt: 2 agen verifikasi, atas permintaan).
 - Hindari screenshot berulang; cek dengan angka (`window.__g`, skrip Python) dulu.
+- Mesh gear cover tidak rapat: voxel paritas sinar Z memberi isi palsu; pakai potongan bidang / jarak ke permukaan.
 - User berbahasa Indonesia.

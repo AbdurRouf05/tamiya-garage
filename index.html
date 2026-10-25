@@ -200,7 +200,12 @@ async function loadModels() {
 // =====================================================================
 const CATALOG = {
   chassis: { label:'Sasis', options:[
-    { id:'super1', name:'Super-1 (model 3D detail)', motor:'rear', shaft:'single', stab:6, weight:23, color:0x2a2d33, model:'super1', desc:'Model 3D asli hasil ukur jangka sorong (8 part terpisah). Sasis klasik dinamo belakang. Model: reyza hadi, CC BY-NC 4.0.' },
+    { id:'super1', name:'Super-1 (model 3D detail)', motor:'rear', shaft:'single', stab:6, weight:23, color:0x2a2d33, model:'super1', desc:'Model 3D asli hasil ukur jangka sorong (8 part terpisah). Sasis klasik dinamo belakang. Model: reyza hadi, CC BY-NC 4.0.',
+      // Titik pasang hasil ukur STL (mm, lihat HANDOFF.md) dalam satuan simulator; y relatif terhadap tinggi as.
+      // gear: [z tengah, tebal] tiap gear di dalam gear cover.
+      mount:{ motor:[-4.286, 0.353, -0.400], counter:[-4.827, 1.200], battery:[0.658, -0.148],
+              rollers:[[8.925, 4.693], [-8.752, 3.141]],
+              gear:{ pinion:[1.916, 0.462], big:[2.039, 0.326], small:[2.392, 0.381], spur:[2.419, 0.381], shaft:[1.903, 1.495] } } },
     { id:'super2', name:'Super-II', motor:'rear', shaft:'single', stab:6, weight:24, color:0x23262c, desc:'Sasis klasik dinamo belakang. Kokoh dan mudah dirakit, cocok untuk pemula.' },
     { id:'ar', name:'AR Chassis', motor:'rear', shaft:'single', stab:7, weight:23, color:0x2f3a4c, desc:'Dinamo belakang dengan lubang aerodinamis. Ganti baterai lewat bawah, praktis.' },
     { id:'vz', name:'VZ Chassis', motor:'rear', shaft:'single', stab:7, weight:21, color:0x121417, desc:'Penerus AR: lebih ringan dan lebih kaku. Pilihan populer untuk balap.' },
@@ -776,8 +781,7 @@ function buildCar(cfg, liv, animateSlots = []) {
   }
 
   // ---- Sasis dari model 3D asli (STL hasil konversi Blender), jika tersedia
-  const M = c.model && MODEL_GEO[c.model];
-  const mbox = key => { const b = M[key].boundingBox.clone(); b.min.y += R; b.max.y += R; return b; };
+  const M = c.model && MODEL_GEO[c.model], MT = M && c.mount;
   if (M) {
     const plastic = () => new THREE.MeshPhysicalMaterial({ color:c.color, roughness:0.48, metalness:0, clearcoat:0.3, clearcoatRoughness:0.5 });
     const mpart = (name, key, material, explode) => part('chassis', name, explode, g => { g.position.y = R; g.add(mesh(M[key], material)); });
@@ -856,19 +860,17 @@ function buildCar(cfg, liv, animateSlots = []) {
       }
     });
   } else {
-    // Pada sasis model, dinamo diletakkan tepat di dudukannya
-    let mx = 3.6 * dir, my = 2.5;
-    if (M) { const b = mbox('motor_bracket'), cc = b.getCenter(new THREE.Vector3()); mx = cc.x; my = cc.y + 0.15; }
+    // Pada sasis model, dinamo dan gear dipasang di titik pasang terukur (c.mount)
+    const mx = MT ? MT.motor[0] : 3.6 * dir, my = MT ? MT.motor[1] + R : 2.5;
     part('motor', `Dinamo ${P.motor.name}`, [dir, 4, 0], g => {
-      g.position.set(mx, my, 0);
+      g.position.set(mx, my, MT ? MT.motor[2] : 0);
       const FM = MODEL_GEO.fa130?.fa130;
       if (FM) {
-        // Dinamo single shaft memakai model asli Mabuchi FA-130; poros model ada di -z, diputar ke +z (sisi pinion)
-        const m = mesh(FM, metal(0xc4c9d1, 0.3));
-        m.rotation.y = Math.PI;
-        g.add(m);
-        // Tanda warna jenis dinamo di tutup belakang
-        g.add(mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.08, 32), mat(P.motor.cap, { roughness:0.35 }), [0, 0, -FM.boundingBox.max.z - 0.04], ROT_Z));
+        // Dinamo single shaft memakai model asli Mabuchi FA-130: poros keluaran di +z model (sisi pinion),
+        // tutup belakang + terminal di -z. Di dudukan Super-1 sisi lebar kaleng (20 mm) tegak, terminal menghadap depan.
+        g.add(mesh(FM, metal(0xc4c9d1, 0.3), [0, 0, 0], [0, 0, MT ? -Math.PI / 2 : 0]));
+        // Tanda warna jenis dinamo di tutup belakang (bukan di ujung poros)
+        g.add(mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.08, 32), mat(P.motor.cap, { roughness:0.35 }), [0, 0, FM.boundingBox.min.z + 0.2], ROT_Z));
         return;
       }
       motorBody(g, ROT_Z);
@@ -878,12 +880,29 @@ function buildCar(cfg, liv, animateSlots = []) {
       for (const x of [-0.5, 0.5]) g.add(rbox(0.25, 0.5, 0.2, 0.05, metal(0xd4a24a), [x, 0.6, -1.75]));
     });
     part('gear', `Gear ${P.gear.ratio}:1`, [dir * 2, 3.5, 4], g => {
+      if (MT) {
+        // Gear di poros aslinya di dalam gear cover: pinion di poros dinamo, counter dua tingkat di porosnya,
+        // spur di as belakang. Jarak antarporos tetap, jadi rasio diatur lewat pembagian counter kecil : spur.
+        // Modul 0,5 mm = 0,068 satuan: kepala gigi 1 modul, kaki 1,25 modul, jumlah gigi = 2r / modul.
+        const [cx, cy] = MT.counter, Z = MT.gear;
+        const rp = 0.272, Rc = Math.hypot(cx - mx, cy + R - my) - rp, dcs = Math.hypot(AX * dir - cx, cy);
+        const rc = dcs / (1 + P.gear.ratio * rp / Rc), Rs = dcs - rc;
+        const gear = (r, [z, depth], material) => mesh(gearGeometry(Math.round(r / 0.034), r + 0.068, r - 0.085, depth), material, [0, 0, z]);
+        const pin = gear(rp, Z.pinion, metal(0xc77b3a, 0.3));
+        pin.position.set(mx, my, Z.pinion[0]);
+        const cnt = new THREE.Group();
+        cnt.position.set(cx, cy + R, 0);
+        cnt.add(gear(Rc, Z.big, mat(0x2fa8e0)), gear(rc, Z.small, mat(0x2fa8e0)));
+        const spur = gear(Rs, Z.spur, mat(0xf2f2f2));
+        spur.position.set(AX * dir, R, Z.spur[0]);
+        g.add(pin, cnt, spur, mesh(new THREE.CylinderGeometry(0.1, 0.1, Z.shaft[1], 12), metal(), [cx, cy + R, Z.shaft[0]], ROT_Z));
+        spinners.push([pin, 'z', 3 * P.gear.ratio], [cnt, 'z', -3 * Rs / rc], [spur, 'z', 3]);
+        return;
+      }
       g.position.set(0, 0, 2.35);
       const gs = 1.0 + (P.gear.ratio - 3.5) * 0.22;
       const pin = mesh(gearGeometry(8, 0.45, 0.33, 0.4), metal(0xc77b3a, 0.3), [mx, my, 0]);
-      // Pada sasis model, gear counter duduk di dalam gear cover: di antara pinion dan spur as roda
-      const cnt = M ? mesh(gearGeometry(22, 0.75 * gs, 0.64 * gs, 0.3), mat(0x2fa8e0), [(mx + AX * dir) / 2, (my + R) / 2 + 0.25, 0])
-                    : mesh(gearGeometry(26, 1.15 * gs, 1.0 * gs, 0.3), mat(0x2fa8e0), [mx + dir * 0.9, my + 0.95 * gs, 0]);
+      const cnt = mesh(gearGeometry(26, 1.15 * gs, 1.0 * gs, 0.3), mat(0x2fa8e0), [mx + dir * 0.9, my + 0.95 * gs, 0]);
       const spur = mesh(gearGeometry(32, 1.45, 1.3, 0.3), mat(0xf2f2f2), [AX * dir, R, 0.05]);
       g.add(pin, cnt, spur);
       spinners.push([pin, 'z', 30], [cnt, 'z', -10], [spur, 'z', 3]);
@@ -906,10 +925,10 @@ function buildCar(cfg, liv, animateSlots = []) {
     // Ukuran asli AA (14,5 x 50 mm) untuk sasis model; versi kode sedikit lebih kecil
     let br = 0.75, bl = 5.0, zs = isMid ? [-1.95, 1.95] : [-0.82, 0.82];
     g.position.set(isMid ? 0 : -1.8 * dir, 2.15, 0);
-    if (M) {
-      const b = mbox('battery_retainer');
-      br = 0.97; bl = 6.6; zs = [-0.99, 0.99];
-      g.position.set(b.getCenter(new THREE.Vector3()).x, b.min.y - br + 0.05, 0);
+    if (MT) {
+      // Di tengah bay baterai yang terukur, duduk di lantainya (AA 14,5 x 50,5 mm)
+      br = 0.985; bl = 6.7; zs = [-0.985, 0.985];
+      g.position.set(MT.battery[0], MT.battery[1] + R, 0);
     }
     const lab = new THREE.MeshStandardMaterial({ map:batteryLabel(P.battery.id), roughness:0.35, metalness:0.15 });
     for (const z of zs) {
@@ -959,14 +978,10 @@ function buildCar(cfg, liv, animateSlots = []) {
 
   // ---- Bumper / plate + roller
   const plate = P.plate, rol = P.roller;
-  // Titik pasang roller: dari ujung bumper model 3D, atau posisi tetap versi kode
-  const ends = M ? (() => {
-    const fb = mbox('sasis'), rb = mbox('rear_bumper');
-    // Roller harus berada di depan/belakang ban (bukan menimpa ban): minimal jari-jari ban + roller + celah
-    const clear = AX + R + rol.r + 0.2 - 0.35;
-    return [{ x:Math.max(fb.max.x - 0.45, clear), z:fb.max.z - 0.45 + (rol.r - 0.65) * 0.6, y:R + 0.35, front:true },
-            { x:Math.min(rb.min.x + 0.45, -clear), z:rb.max.z - 0.45 + (rol.r - 0.65) * 0.6, y:R + 0.35, front:false }];
-  })() : [8.7, -8.7].map(x => ({ x, z:5.05 + (rol.r - 0.65) * 0.8, y:2.15, front:x > 0 }));
+  // Titik pasang roller: lubang roller terukur di bumper depan sasis dan bumper belakang model 3D
+  // (roller digeser 0,35 ke luar dari x ujung), atau posisi tetap versi kode
+  const ends = MT ? MT.rollers.map(([x, z]) => ({ x:x - Math.sign(x) * 0.35, z, y:R + 0.35, front:x > 0 }))
+    : [8.7, -8.7].map(x => ({ x, z:5.05 + (rol.r - 0.65) * 0.8, y:2.15, front:x > 0 }));
   for (const end of ends) {
     const { x, front } = end, rollerZ = end.z;
     if (M && plate.id === 'stock') { addRollers(end); continue; }

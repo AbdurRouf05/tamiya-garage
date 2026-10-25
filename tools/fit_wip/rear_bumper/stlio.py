@@ -1,7 +1,7 @@
 import struct
 from pathlib import Path
 import numpy as np
-SRC = Path(r"D:\coding\tamiya-garage\models\source\super1-printables")
+SRC = Path(__file__).resolve().parents[3] / "models" / "source" / "super1-printables"
 CACHE = Path(__file__).resolve().parent / "cache"
 CACHE.mkdir(exist_ok=True)
 

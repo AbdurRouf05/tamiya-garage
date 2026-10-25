@@ -18,7 +18,7 @@ Sebelum dipakai di `index.html`, file harus diperkecil dulu lewat Blender menjad
 ## Sudah dipasang di simulator (`models/web/`)
 | File | Dari | Segitiga | Ukuran |
 |---|---|---|---|
-| `super1.glb` / `super1.js` | 8 STL Super-1 (±11,6 juta segitiga, 550 MB) | ±340 ribu | 865 KB (Draco) |
+| `super1.glb` / `super1.js` | 8 STL Super-1 (±11,6 juta segitiga, 550 MB), part pelengkap sudah di posisi rakit | ±340 ribu | 865 KB (Draco) |
 | `body-aero.glb` / `body-aero.js` | body ckw8217 | 38 ribu | 139 KB (Draco) |
 | `body-magnum.glb` / `body-magnum.js` | Cyclone Magnum IGES → `tools/cad_to_glb.py` (cascadio) → `tools/blender_magnum.py` (hanya kelompok body: shell, sayap, sirip) | 60 ribu | 242 KB (Draco) |
 | `fa130.glb` / `fa130.js` | Mabuchi FA-130 STEP → `tools/cad_to_glb.py` → `tools/blender_fa130.py` | 40 ribu | 395 KB (Draco) |
@@ -28,13 +28,27 @@ Dinamo FA-130 dipakai untuk semua dinamo single shaft. Dinamo PRO (double shaft)
 
 Cara membuat ulang (Blender 5 di `D:\setup\blender`):
 ```
-blender --background --factory-startup --python tools/blender_convert.py -- models/web/super1.glb 0.1346 "39,70,15.1" 90 "<stl>|<nama>|<target>" ...
+blender --background --factory-startup --python tools/blender_convert.py -- models/web/super1.glb 0.1359174 "39,68.785,15.095" 90 \
+  "<S>/chassis-super-1.stl|sasis|140000" \
+  "<S>/chassis-super-1-gear-cover.stl|gear_cover|40000|0.977,13.96,0" \
+  "<S>/chassis-super-1-motor-bracket.stl|motor_bracket|40000|0.977,13.96,0" \
+  "<S>/chassis-super-1-rear-bumper.stl|rear_bumper|60000|0.977,13.96,0" \
+  "<S>/chassis-super-1-switch-cover.stl|switch_cover|40000|0.977,13.96,0" \
+  "<S>/chassis-super-1-switch-on-off.stl|switch_knob|12000|0.977,13.96,0" \
+  "<S>/chassis-super-1-battery-retainer.stl|battery_retainer|2000|0.977,13.96,2.5" \
+  "<S>/chassis-super-1-wheel-bearing.stl|wheel_bearing|6000|0.977,13.96,0"
 python tools/glb_to_js.py models/web/super1.glb super1
 ```
-Skala 0,1346 berarti 1 satuan simulator ≈ 7,4 mm (jarak sumbu roda 80 mm = 10,8 satuan).
-Titik asal (39, 70, 15,1) mm adalah tengah kedua lubang as. Lubang as sasis Super-1 ada di y = 30 dan 110 mm, z = 15,1 mm
-(diukur dari render samping `tools/blender_view_super1.py`). File bearing Printables **tidak** berada di lubangnya
-(diletakkan untuk dicetak), jadi simulator memindahkannya ke lubang as.
+(`<S>` = `models/source/super1-printables`.)
+Lubang as sasis Super-1 ada di y = 29,055 dan 108,515 mm, z = 15,095 mm (potongan bidang X lewat dinding samping,
+lubang r 2,1 mm + ceruk bearing r 2,95 mm di sisi luar). Jarak sumbu roda 79,46 mm, jadi skala 10,8 / 79,46 = 0,1359174
+membuat kedua lubang tepat di x = ±5,4 (as roda simulator). Titik asal (39; 68,785; 15,095) mm = tengah kedua lubang as.
+
+Semua part pelengkap di file Printables (gear cover, dudukan dinamo, bumper belakang, penutup saklar, tombol, penahan
+baterai, bearing) berada di satu rangka rakitan yang tergeser **T0 = (+0,977; +13,96; 0) mm** dari sasis: pembuatnya hanya
+memindahkan sasis ke titik nol XY. Bukti: lubang sekrup bumper belakang tepat di lubang lantai sasis, bearing tepat di
+ceruknya, dan tembusan voxel ke sasis turun dari 383/72/21/42 mm³ menjadi ≤ 4 mm³. Penahan baterai dinaikkan 2,5 mm
+lagi supaya talinya bertumpu di atas baterai AA yang duduk di lantai bay (di T0 tali memotong baterai 2,5 mm).
 File `.js` adalah GLB dalam base64, supaya `index.html` tetap bisa dibuka langsung tanpa server.
 
 ## Kewajiban atribusi

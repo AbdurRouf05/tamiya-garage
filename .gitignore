@@ -30,3 +30,8 @@ desktop.ini
 .idea/
 *.swp
 *.swo
+
+# Data kerja besar (cache STL .npy, hasil voxel .npz) dan keluaran Playwright
+tools/fit_wip/**/cache/
+tools/fit_wip/**/*.npz
+.playwright-mcp/
