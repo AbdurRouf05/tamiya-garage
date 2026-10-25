@@ -1,0 +1,635 @@
+{
+  "axle-propeller": {
+    "filename": "axle-propeller.glb",
+    "js_filename": "axle-propeller.js",
+    "js_key": "axlePropeller",
+    "size_kb": 2.2,
+    "polygons": 132,
+    "submeshes": [
+      "propeller_shaft"
+    ],
+    "bounding_box": {
+      "min": [
+        -5.1988,
+        -0.2447,
+        -0.2447
+      ],
+      "max": [
+        5.1988,
+        0.2447,
+        0.2447
+      ],
+      "dimensions": [
+        10.3977,
+        0.4893,
+        0.4893
+      ]
+    },
+    "base64_sync": true
+  },
+  "axle-wheel": {
+    "filename": "axle-wheel.glb",
+    "js_filename": "axle-wheel.js",
+    "js_key": "axleWheel",
+    "size_kb": 1.5,
+    "polygons": 60,
+    "submeshes": [
+      "axle"
+    ],
+    "bounding_box": {
+      "min": [
+        -0.1359,
+        -0.1359,
+        -4.3494
+      ],
+      "max": [
+        0.1359,
+        0.1359,
+        4.3494
+      ],
+      "dimensions": [
+        0.2719,
+        0.2719,
+        8.6987
+      ]
+    },
+    "base64_sync": true
+  },
+  "battery-aa": {
+    "filename": "battery-aa.glb",
+    "js_filename": "battery-aa.js",
+    "js_key": "batteryAa",
+    "size_kb": 4.3,
+    "polygons": 308,
+    "submeshes": [
+      "body",
+      "terminals"
+    ],
+    "bounding_box": {
+      "min": [
+        -3.3843,
+        -0.9652,
+        -0.965
+      ],
+      "max": [
+        3.5203,
+        0.965,
+        0.9652
+      ],
+      "dimensions": [
+        6.9046,
+        1.9302,
+        1.9302
+      ]
+    },
+    "base64_sync": true
+  },
+  "body-aero": {
+    "filename": "body-aero.glb",
+    "js_filename": "body-aero.js",
+    "js_key": "bodyAero",
+    "size_kb": 138.6,
+    "polygons": 38008,
+    "submeshes": [
+      "body"
+    ],
+    "bounding_box": {
+      "min": [
+        -9.8889,
+        -6.0181,
+        -0.0001
+      ],
+      "max": [
+        9.8819,
+        6.0184,
+        5.4316
+      ],
+      "dimensions": [
+        19.7708,
+        12.0365,
+        5.4318
+      ]
+    },
+    "base64_sync": true
+  },
+  "body-magnum": {
+    "filename": "body-magnum.glb",
+    "js_filename": "body-magnum.js",
+    "js_key": "bodyMagnum",
+    "size_kb": 181.1,
+    "polygons": 60000,
+    "submeshes": [
+      "body"
+    ],
+    "bounding_box": {
+      "min": [
+        -9.3431,
+        -5.0243,
+        -0.6197
+      ],
+      "max": [
+        8.5483,
+        5.0195,
+        3.4657
+      ],
+      "dimensions": [
+        17.8914,
+        10.0438,
+        4.0854
+      ]
+    },
+    "base64_sync": true
+  },
+  "fa130-pro": {
+    "filename": "fa130-pro.glb",
+    "js_filename": "fa130-pro.js",
+    "js_key": "fa130Pro",
+    "size_kb": 269.8,
+    "polygons": 35114,
+    "submeshes": [
+      "fa130-pro"
+    ],
+    "bounding_box": {
+      "min": [
+        -1.3603,
+        -2.7,
+        -1.0293
+      ],
+      "max": [
+        1.3613,
+        2.7,
+        1.2187
+      ],
+      "dimensions": [
+        2.7216,
+        5.4,
+        2.2479
+      ]
+    },
+    "base64_sync": true
+  },
+  "fa130": {
+    "filename": "fa130.glb",
+    "js_filename": "fa130.js",
+    "js_key": "fa130",
+    "size_kb": 296.1,
+    "polygons": 39999,
+    "submeshes": [
+      "fa130"
+    ],
+    "bounding_box": {
+      "min": [
+        -1.3603,
+        -2.5626,
+        -1.0293
+      ],
+      "max": [
+        1.3613,
+        2.5637,
+        1.2186
+      ],
+      "dimensions": [
+        2.7216,
+        5.1262,
+        2.2479
+      ]
+    },
+    "base64_sync": true
+  },
+  "gear-counter": {
+    "filename": "gear-counter.glb",
+    "js_filename": "gear-counter.js",
+    "js_key": "gearCounter",
+    "size_kb": 30.6,
+    "polygons": 6000,
+    "submeshes": [
+      "counter"
+    ],
+    "bounding_box": {
+      "min": [
+        -0.7407,
+        -0.7414,
+        -0.7414
+      ],
+      "max": [
+        0.7408,
+        0.7414,
+        0.7414
+      ],
+      "dimensions": [
+        1.4815,
+        1.4828,
+        1.4828
+      ]
+    },
+    "base64_sync": true
+  },
+  "gear-pinion": {
+    "filename": "gear-pinion.glb",
+    "js_filename": "gear-pinion.js",
+    "js_key": "gearPinion",
+    "size_kb": 8.8,
+    "polygons": 1584,
+    "submeshes": [
+      "pinion"
+    ],
+    "bounding_box": {
+      "min": [
+        -0.3058,
+        -0.2713,
+        -0.2713
+      ],
+      "max": [
+        0.3058,
+        0.2713,
+        0.2713
+      ],
+      "dimensions": [
+        0.6116,
+        0.5425,
+        0.5425
+      ]
+    },
+    "base64_sync": true
+  },
+  "gear-set": {
+    "filename": "gear-set.glb",
+    "js_filename": "gear-set.js",
+    "js_key": "gearSet",
+    "size_kb": 70.5,
+    "polygons": 13584,
+    "submeshes": [
+      "counter",
+      "pinion",
+      "spur"
+    ],
+    "bounding_box": {
+      "min": [
+        0.2147,
+        -3.2762,
+        -1.9906
+      ],
+      "max": [
+        1.6963,
+        -0.6661,
+        0.0938
+      ],
+      "dimensions": [
+        1.4815,
+        2.6101,
+        2.0844
+      ]
+    },
+    "base64_sync": true
+  },
+  "gear-spur": {
+    "filename": "gear-spur.glb",
+    "js_filename": "gear-spur.js",
+    "js_key": "gearSpur",
+    "size_kb": 31.4,
+    "polygons": 6000,
+    "submeshes": [
+      "spur"
+    ],
+    "bounding_box": {
+      "min": [
+        -0.1903,
+        -0.7,
+        -0.7
+      ],
+      "max": [
+        0.1903,
+        0.7,
+        0.7
+      ],
+      "dimensions": [
+        0.3806,
+        1.3999,
+        1.3999
+      ]
+    },
+    "base64_sync": true
+  },
+  "mass-damper": {
+    "filename": "mass-damper.glb",
+    "js_filename": "mass-damper.js",
+    "js_key": "massDamper",
+    "size_kb": 9.0,
+    "polygons": 1420,
+    "submeshes": [
+      "damper_pole",
+      "damper_weight"
+    ],
+    "bounding_box": {
+      "min": [
+        -0.5776,
+        0.0,
+        -0.5776
+      ],
+      "max": [
+        0.5776,
+        2.2019,
+        0.5776
+      ],
+      "dimensions": [
+        1.1553,
+        2.2019,
+        1.1553
+      ]
+    },
+    "base64_sync": true
+  },
+  "plate-frp-front": {
+    "filename": "plate-frp-front.glb",
+    "js_filename": "plate-frp-front.js",
+    "js_key": "plateFrpFront",
+    "size_kb": 7.2,
+    "polygons": 1006,
+    "submeshes": [
+      "plate_front"
+    ],
+    "bounding_box": {
+      "min": [
+        -6.9997,
+        -0.1023,
+        -0.8155
+      ],
+      "max": [
+        6.9997,
+        0.1019,
+        0.8833
+      ],
+      "dimensions": [
+        13.9995,
+        0.2042,
+        1.6988
+      ]
+    },
+    "base64_sync": true
+  },
+  "plate-frp-rear": {
+    "filename": "plate-frp-rear.glb",
+    "js_filename": "plate-frp-rear.js",
+    "js_key": "plateFrpRear",
+    "size_kb": 5.8,
+    "polygons": 810,
+    "submeshes": [
+      "plate_rear"
+    ],
+    "bounding_box": {
+      "min": [
+        -7.0677,
+        -0.1017,
+        -0.8835
+      ],
+      "max": [
+        7.0677,
+        0.1019,
+        1.019
+      ],
+      "dimensions": [
+        14.1354,
+        0.2036,
+        1.9025
+      ]
+    },
+    "base64_sync": true
+  },
+  "roller-13mm": {
+    "filename": "roller-13mm.glb",
+    "js_filename": "roller-13mm.js",
+    "js_key": "roller13mm",
+    "size_kb": 16.3,
+    "polygons": 1635,
+    "submeshes": [
+      "roller"
+    ],
+    "bounding_box": {
+      "min": [
+        -0.8835,
+        -0.1631,
+        -0.8835
+      ],
+      "max": [
+        0.8835,
+        0.1631,
+        0.8835
+      ],
+      "dimensions": [
+        1.7669,
+        0.3262,
+        1.7669
+      ]
+    },
+    "base64_sync": true
+  },
+  "roller-19mm": {
+    "filename": "roller-19mm.glb",
+    "js_filename": "roller-19mm.js",
+    "js_key": "roller19mm",
+    "size_kb": 19.8,
+    "polygons": 2083,
+    "submeshes": [
+      "roller"
+    ],
+    "bounding_box": {
+      "min": [
+        -1.2912,
+        -0.1495,
+        -1.2912
+      ],
+      "max": [
+        1.2912,
+        0.1495,
+        1.2912
+      ],
+      "dimensions": [
+        2.5824,
+        0.299,
+        2.5824
+      ]
+    },
+    "base64_sync": true
+  },
+  "sliding-spoiler": {
+    "filename": "sliding-spoiler.glb",
+    "js_filename": "sliding-spoiler.js",
+    "js_key": "slidingSpoiler",
+    "size_kb": 23.7,
+    "polygons": 9998,
+    "submeshes": [
+      "sliding_spoiler"
+    ],
+    "bounding_box": {
+      "min": [
+        -5.9637,
+        -1.3235,
+        0.0001
+      ],
+      "max": [
+        5.9637,
+        1.3236,
+        1.2232
+      ],
+      "dimensions": [
+        11.9274,
+        2.6471,
+        1.2231
+      ]
+    },
+    "base64_sync": true
+  },
+  "super1": {
+    "filename": "super1.glb",
+    "js_filename": "super1.js",
+    "js_key": "super1",
+    "size_kb": 864.4,
+    "polygons": 339551,
+    "submeshes": [
+      "battery_retainer",
+      "gear_cover",
+      "motor_bracket",
+      "rear_bumper",
+      "sasis",
+      "switch_cover",
+      "switch_knob",
+      "wheel_bearing"
+    ],
+    "bounding_box": {
+      "min": [
+        -10.8861,
+        -5.2997,
+        -1.5046
+      ],
+      "max": [
+        9.3484,
+        5.3041,
+        2.2874
+      ],
+      "dimensions": [
+        20.2345,
+        10.6038,
+        3.792
+      ]
+    },
+    "base64_sync": true
+  },
+  "terminals": {
+    "filename": "terminals.glb",
+    "js_filename": "terminals.js",
+    "js_key": "terminals",
+    "size_kb": 32.1,
+    "polygons": 7822,
+    "submeshes": [
+      "Switch:1",
+      "Terminal B:1",
+      "Terminal C:1",
+      "Terminal:1"
+    ],
+    "bounding_box": {
+      "min": [
+        1.4854,
+        -2.6321,
+        -11.3487
+      ],
+      "max": [
+        5.4648,
+        0.0351,
+        -2.8668
+      ],
+      "dimensions": [
+        3.9794,
+        2.6672,
+        8.4819
+      ]
+    },
+    "base64_sync": true
+  },
+  "wheel-3spoke": {
+    "filename": "wheel-3spoke.glb",
+    "js_filename": "wheel-3spoke.js",
+    "js_key": "wheel3Spoke",
+    "size_kb": 31.4,
+    "polygons": 3652,
+    "submeshes": [
+      "rim",
+      "tire"
+    ],
+    "bounding_box": {
+      "min": [
+        -1.4951,
+        -1.4951,
+        -1.0194
+      ],
+      "max": [
+        1.4951,
+        1.4951,
+        0.6796
+      ],
+      "dimensions": [
+        2.9902,
+        2.9902,
+        1.699
+      ]
+    },
+    "base64_sync": true
+  },
+  "wheel-6spoke": {
+    "filename": "wheel-6spoke.glb",
+    "js_filename": "wheel-6spoke.js",
+    "js_key": "wheel6Spoke",
+    "size_kb": 55.9,
+    "polygons": 12334,
+    "submeshes": [
+      "rim",
+      "tire"
+    ],
+    "bounding_box": {
+      "min": [
+        -2.05,
+        -2.0517,
+        -0.9242
+      ],
+      "max": [
+        2.05,
+        2.045,
+        0.9242
+      ],
+      "dimensions": [
+        4.1,
+        4.0968,
+        1.8485
+      ]
+    },
+    "base64_sync": true
+  },
+  "wheel-cyclone": {
+    "filename": "wheel-cyclone.glb",
+    "js_filename": "wheel-cyclone.js",
+    "js_key": "wheelCyclone",
+    "size_kb": 48.5,
+    "polygons": 12200,
+    "submeshes": [
+      "rim",
+      "tire"
+    ],
+    "bounding_box": {
+      "min": [
+        -1.4922,
+        -1.4913,
+        -1.4378
+      ],
+      "max": [
+        1.4922,
+        1.4912,
+        0.746
+      ],
+      "dimensions": [
+        2.9843,
+        2.9825,
+        2.1839
+      ]
+    },
+    "base64_sync": true
+  }
+}

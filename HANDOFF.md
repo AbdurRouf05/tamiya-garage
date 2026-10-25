@@ -41,7 +41,7 @@ Buka dengan klik dua kali, atau `python -m http.server 8765` lalu buka `localhos
 - Model FA-130 (`models/web/fa130.glb`, skala 0,1346): **poros keluaran + boss di +z**, tutup belakang + tab terminal di −z;
   kaleng z −2,086…+1,303; lebar 20 mm di x, sisi datar 15 mm di y (tab sampai y 1,22).
 
-## Selesai 24–25 Okt
+## Selesai 24 Okt
 1. Masalah lama no. 1: super1.glb dikonversi ulang, semua part pelengkap di posisi rakit (T0), titik asal & skala baru.
 2. No. 2 & 6: gear di poros aslinya di dalam gear cover (pinion di poros dinamo, counter dua tingkat, spur di as; jari-jari
    saling bertaut, rasio diatur lewat pembagian counter kecil : spur). "Bundaran melayang" = cakram warna dinamo yang dulu
@@ -50,38 +50,15 @@ Buka dengan klik dua kali, atau `python -m http.server 8765` lalu buka `localhos
 3. No. 3: baterai duduk di lantai bay (dasar y 0,617 > dasar sasis 0,262), di antara dinding bay, tali penahan di atasnya.
 4. Roller Super-1 di lubang terukur (rumus lama berbasis bbox akan menaruh roller belakang 2 satuan di belakang lubangnya).
 5. Titik pasang ada di `mount` pada entri sasis `super1` (`index.html`), dipakai lewat `MT` di `buildCar`.
-6. **Aset 3D Baru Dikonversi & Dibuat (25 Okt)**:
-   - `models/web/sliding-spoiler.glb` + `.js` (dari `Mini_4WD_sliding_spoiler.stl`, 24 KB Draco, titik asal terpusat).
-   - `models/work/racing_raw.glb` (dari `Mini 4WD Racing.stp`, 33 part CAD terpisah dengan material asli).
-   - `models/web/wheel-6spoke.glb` + `.js` (roda 6-spoke balap terpisah `rim` dan `tire`, skala simulator, 57 KB Draco).
-   - `models/web/wheel-cyclone.glb` + `.js` (roda 5-spoke spiral Magnum terpisah `rim` dan `tire`, skala simulator, 50 KB Draco).
-   - `models/web/wheel-3spoke.glb` + `.js` (roda 3-spoke presisi dari CAD SolidWorks `Velg.SLDPRT` & `Tire.SLDPRT`, 32 KB Draco, 3 hollow window cutout, outer rim 20 mm, tire 22 mm).
-   - `models/web/roller-13mm.glb` + `.js` (guide roller 13 mm 3-spoke dari CAD SolidWorks `Piringan.SLDPRT`, 17 KB Draco, alur ekuator pemandu dinding, sumbu putar Y).
-   - `models/web/roller-19mm.glb` + `.js` (guide roller 19 mm 6-hole aero lightweight aluminium, 20 KB Draco, alur O-ring luar, sumbu putar Y).
-   - `models/web/fa130-pro.glb` + `.js` (dinamo Mabuchi FA-130 PRO double shaft simetris untuk sasis MS/MA mid-ship, 276 KB Draco).
-   - `models/web/gear-pinion.glb` + `.js` (pinion gear 8T presisi dari CAD `racing_raw.glb`, 9 KB Draco).
-   - `models/web/gear-counter.glb` + `.js` (counter gear dua tingkat dari CAD `racing_raw.glb`, 31 KB Draco).
-   - `models/web/gear-spur.glb` + `.js` (spur gear as roda belakang dari CAD `racing_raw.glb`, 32 KB Draco).
-   - `models/web/gear-set.glb` + `.js` (set lengkap 3 gear dalam konfigurasi meshed/terpasang, 72 KB Draco).
-   - `models/web/mass-damper.glb` + `.js` (damper pemberat kuningan bertingkat + tiang stainless + locknut + bola stabilizer, 9 KB Draco).
-   - `models/web/battery-aa.glb` + `.js` (baterai AA dari CAD `Battery.SLDPRT`, terpisah `body` dan `terminals`, 4 KB Draco).
-   - `models/web/plate-frp-front.glb` + `.js` (bumper plate FRP depan multi-roller setting stay, 7 KB Draco).
-   - `models/web/plate-frp-rear.glb` + `.js` (bumper plate FRP belakang multi-roller stay, 6 KB Draco).
-   - `models/web/terminals.glb` + `.js` (plat kontak tembaga motor/baterai & tuas saklar dari CAD `racing_raw.glb`, 33 KB Draco).
-
-## Catatan SolidWorks (.SLDPRT)
-- Parser pure-Python `sw2fc` berhasil mengekstrak seluruh aliran Parasolid XT, PreviewPNG, dan pengukuran geometris presisi (silinder, torus, lingkaran, bidang) dari 24/26 file `.SLDPRT` di `models/source/tamiya15-solidworks/Part/`.
-- Seluruh dimensi CAD asli (radius barel, diameter hub, fillet torus, sudut cutout) dapat direkonstruksi 100% presisi matematis ke Blender dan diekspor ke Draco GLB web tanpa perlu instalasi SolidWorks berbayar.
+6. Verifikasi: <diisi setelah workflow verifikasi selesai>
 
 ## Masalah terbuka
 1. Body Magnum: atap sisi kiri belakang terlalu rendah. Gear cover dan dudukan dinamo menembus ±8–9 mm
-   (pilihan: modifikasi mesh STL melengkungkan atap di atas gear, atau potong/hilangkan flap mesin).
-2. Wire-up opsi part baru (`wheel-6spoke`, `wheel-cyclone`, `wheel-3spoke`, `roller-13mm`, `roller-19mm`, `fa130-pro`, `mass-damper`, `gear-set`) ke `index.html` dapat dilakukan kapan saja tanpa mengubah logika inti.
-
    (x −2,7…−4,8; z 1,7–2,0), sama besarnya dengan sebelum koreksi (uji peta tinggi body di browser). Body sayap aman
    (`python tools/body_clearance.py 0.9 1.05 1.28 1.12` → 0,00). → naikkan/potong body Magnum lokal.
 2. Plate FRP: kalau tidak muat tanpa dipaksa, jangan dipakai. Plate belakang sekarang ada di lubang roller bumper; cek tabrakan dengan bumper.
-3. Kecil: model FA-130 masih skala 0,1346 (1 % lebih kecil dari sasis); tabung kait penahan baterai bersinggungan
+3. Survei aset: `models/source/racing-grabcad/Mini 4WD Racing.stp` (model lengkap) belum dikonversi per part.
+4. Kecil: model FA-130 masih skala 0,1346 (1 % lebih kecil dari sasis); tabung kait penahan baterai bersinggungan
    0,5 mm dengan bibir dinding; struktur dalam gear cover (rusuk) tidak mencerminkan gear asli, jadi gear menembus rusuk
    dalam (tak terlihat saat cover terpasang).
 
