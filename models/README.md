@@ -13,15 +13,31 @@ Sebelum dipakai di `index.html`, file harus diperkecil dulu lewat Blender menjad
 | `source/fa130-motor-grabcad` | Dinamo Mabuchi FA-130 (jenis dinamo mini 4WD), lengkap dengan isi dalamnya | STEP + SolidWorks | Tidak ada file lisensi (GrabCAD) | ⭐ **Cocok** untuk menggantikan dinamo versi kode. Perlu konversi STEP. Pribadi/non-komersial |
 | `source/gearbox-70093-grabcad` | Tamiya 70093 3-speed crank axle gearbox (kit edukasi) | STEP + Fusion 360 | Tidak ada file lisensi (GrabCAD) | ⚠️ Bukan part mini 4WD. Hanya referensi bentuk gear |
 | `archives/tamiya-tt-01-kit-rc-car.zip` | Mobil RC Tamiya TT-01 (skala 1/10) | STL | Tidak ada file lisensi | ❌ Bukan mini 4WD (beda skala dan jenis), tidak diekstrak |
-| `source/tamiya15-solidworks` | Rakitan lengkap (sasis, body, dinamo, gear, roda, baterai) | SolidWorks (.SLDPRT/.SLDASM) | Tidak ada file lisensi (GrabCAD) | ❌ Belum bisa. Blender tidak bisa membuka format SolidWorks, jadi harus diekspor ke STEP/STL dulu dari SolidWorks |
+| `source/tamiya15-solidworks` | Rakitan lengkap (sasis, body, dinamo, gear, roda, baterai) | SolidWorks (.SLDPRT/.SLDASM) | Tidak ada file lisensi (GrabCAD) | ✅ **Bisa diakses & direkonstruksi.** Parser Python mengekstrak parameter CAD & B-Rep Parasolid asli untuk pembuatan model presisi di Blender |
 
-## Sudah dipasang di simulator (`models/web/`)
-| File | Dari | Segitiga | Ukuran |
-|---|---|---|---|
-| `super1.glb` / `super1.js` | 8 STL Super-1 (±11,6 juta segitiga, 550 MB), part pelengkap sudah di posisi rakit | ±340 ribu | 865 KB (Draco) |
-| `body-aero.glb` / `body-aero.js` | body ckw8217 | 38 ribu | 139 KB (Draco) |
-| `body-magnum.glb` / `body-magnum.js` | Cyclone Magnum IGES → `tools/cad_to_glb.py` (cascadio) → `tools/blender_magnum.py` (hanya kelompok body: shell, sayap, sirip) | 60 ribu | 242 KB (Draco) |
-| `fa130.glb` / `fa130.js` | Mabuchi FA-130 STEP → `tools/cad_to_glb.py` → `tools/blender_fa130.py` | 40 ribu | 395 KB (Draco) |
+## Sudah dipasang / siap di simulator (`models/web/`)
+| File | Dari | Komponen | Segitiga | Ukuran (GLB) |
+|---|---|---|---|---|
+| `super1.glb` / `.js` | 8 STL Super-1 | sasis, gear cover, motor bracket, bumper, saklar, penahan baterai, bearing | ±340 ribu | 865 KB (Draco) |
+| `body-aero.glb` / `.js` | Thingiverse 893769 | Body balap bersayap | 38 ribu | 139 KB (Draco) |
+| `body-magnum.glb` / `.js` | GrabCAD Cyclone Magnum IGES | Shell, sayap, sirip moncong | 60 ribu | 181 KB (Draco) |
+| `sliding-spoiler.glb` / `.js` | Thingiverse 927487 | Sliding spoiler stabilizer | 14 ribu | 24 KB (Draco) |
+| `wheel-6spoke.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Roda balap 6-spoke (`rim`, `tire`) | 3.5 ribu | 57 KB (Draco) |
+| `wheel-cyclone.glb` / `.js` | GrabCAD Cyclone Magnum IGES | Roda spiral 5-spoke (`rim`, `tire`) | 4.2 ribu | 50 KB (Draco) |
+| `wheel-3spoke.glb` / `.js` | SolidWorks `Velg.SLDPRT` + `Tire.SLDPRT` | Roda balap 3-spoke aerodinamis (`rim`, `tire`) | 1.1 ribu | 32 KB (Draco) |
+| `roller-13mm.glb` / `.js` | SolidWorks `Piringan.SLDPRT` | Guide roller 13 mm 3-spoke + alur dinding | 598 | 17 KB (Draco) |
+| `roller-19mm.glb` / `.js` | Standar Tamiya Aero | Guide roller 19 mm 6-lubang aero aluminium | 718 | 20 KB (Draco) |
+| `fa130.glb` / `.js` | GrabCAD Mabuchi FA-130 STEP | Dinamo single-shaft (rear/front motor) | 40 ribu | 296 KB (Draco) |
+| `fa130-pro.glb` / `.js` | Mabuchi FA-130 PRO | Dinamo double-shaft simetris (MS/MA mid-ship) | 35 ribu | 270 KB (Draco) |
+| `gear-pinion.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Pinion gear 8T kuningan/plastik | 1.6 ribu | 9 KB (Draco) |
+| `gear-counter.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Counter gear dua tingkat | 6.0 ribu | 31 KB (Draco) |
+| `gear-spur.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Spur gear as roda belakang | 6.0 ribu | 32 KB (Draco) |
+| `gear-set.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Set lengkap 3 gear terpasang (meshed) | 13.6 ribu | 72 KB (Draco) |
+| `mass-damper.glb` / `.js` | Standar Tamiya Racing | Damper pemberat kuningan (`damper_weight`, `damper_pole`) | 664 | 9 KB (Draco) |
+| `battery-aa.glb` / `.js` | SolidWorks `Battery.SLDPRT` | Baterai AA (`body`, `terminals`) | 86 | 4 KB (Draco) |
+| `plate-frp-front.glb` / `.js` | Standar Tamiya FRP Multi Stay | Bumper plate FRP depan multi-roller | 265 | 7 KB (Draco) |
+| `plate-frp-rear.glb` / `.js` | Standar Tamiya FRP Multi Stay | Bumper plate FRP belakang multi-roller | 204 | 6 KB (Draco) |
+| `terminals.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Plat tembaga terminal dinamo/baterai + saklar | 7.3 ribu | 33 KB (Draco) |
 
 Magnum diskalakan supaya jarak sumbu rodanya 80 mm (sama dengan Super-1), lalu diputar agar moncongnya menghadap +x.
 Dinamo FA-130 dipakai untuk semua dinamo single shaft. Dinamo PRO (double shaft) masih memakai versi kode.
