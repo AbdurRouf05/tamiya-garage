@@ -12,13 +12,14 @@ Sebelum dipakai di `index.html`, file harus diperkecil dulu lewat Blender menjad
 | `source/cyclone-magnum-grabcad` | **Cyclone Magnum lengkap**: body, sayap, roda, sekrup | IGES + SolidWorks | Tidak ada file lisensi (GrabCAD) | ⭐ **Sangat cocok** sebagai body utama. Perlu dikonversi dari IGES (format CAD) ke mesh dulu. Hanya untuk pemakaian pribadi atau non-komersial |
 | `source/fa130-motor-grabcad` | Dinamo Mabuchi FA-130 (jenis dinamo mini 4WD), lengkap dengan isi dalamnya | STEP + SolidWorks | Tidak ada file lisensi (GrabCAD) | ⭐ **Cocok** untuk menggantikan dinamo versi kode. Perlu konversi STEP. Pribadi/non-komersial |
 | `source/gearbox-70093-grabcad` | Tamiya 70093 3-speed crank axle gearbox (kit edukasi) | STEP + Fusion 360 | Tidak ada file lisensi (GrabCAD) | ⚠️ Bukan part mini 4WD. Hanya referensi bentuk gear |
-| `archives/tamiya-tt-01-kit-rc-car.zip` | Mobil RC Tamiya TT-01 (skala 1/10) | STL | Tidak ada file lisensi | ❌ Bukan mini 4WD (beda skala dan jenis), tidak diekstrak |
+| `source/tamiya-tt01-rc` | Mobil RC Tamiya TT-01 4WD (skala 1/10) | STL + STEP + SolidWorks | Tidak ada file lisensi (GrabCAD) | ✅ **Diekstrak & Dikonversi.** Kit RC touring car lengkap: sasis, suspensi wishbone, coilover shock, dinamo 540, propeller shaft, gir diff, baterai 7.2V, velg & ban. Disesuaikan ke standar skala wheelbase simulator. |
 | `source/tamiya15-solidworks` | Rakitan lengkap (sasis, body, dinamo, gear, roda, baterai) | SolidWorks (.SLDPRT/.SLDASM) | Tidak ada file lisensi (GrabCAD) | ✅ **Bisa diakses & direkonstruksi.** Parser Python mengekstrak parameter CAD & B-Rep Parasolid asli untuk pembuatan model presisi di Blender |
 
 ## Sudah dipasang / siap di simulator (`models/web/`)
 | File | Dari | Komponen | Segitiga | Ukuran (GLB) |
 |---|---|---|---|---|
 | `super1.glb` / `.js` | 8 STL Super-1 | sasis, gear cover, motor bracket, bumper, saklar, penahan baterai, bearing | ±340 ribu | 865 KB (Draco) |
+| `rc-tt01.glb` / `.js` | GrabCAD Tamiya TT-01 | Kit RC 1/10: `sasis`, `suspension`, `drivetrain`, `electronics`, `body_posts`, `rims`, `tires` | 155.5 ribu | 768 KB (Draco) |
 | `body-aero.glb` / `.js` | Thingiverse 893769 | Body balap bersayap | 38 ribu | 139 KB (Draco) |
 | `body-magnum.glb` / `.js` | GrabCAD Cyclone Magnum IGES | Shell, sayap, sirip moncong | 60 ribu | 181 KB (Draco) |
 | `sliding-spoiler.glb` / `.js` | Thingiverse 927487 | Sliding spoiler stabilizer | 14 ribu | 24 KB (Draco) |
@@ -33,6 +34,8 @@ Sebelum dipakai di `index.html`, file harus diperkecil dulu lewat Blender menjad
 | `gear-counter.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Counter gear dua tingkat | 6.0 ribu | 31 KB (Draco) |
 | `gear-spur.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Spur gear as roda belakang | 6.0 ribu | 32 KB (Draco) |
 | `gear-set.glb` / `.js` | GrabCAD Mini 4WD Racing STP | Set lengkap 3 gear terpasang (meshed) | 13.6 ribu | 72 KB (Draco) |
+| `axle-wheel.glb` / `.js` | Standar As Roda Mini 4WD | As roda hex 64 mm baja galvanis (`axle`) | 60 | 1.5 KB (Draco) |
+| `axle-propeller.glb` / `.js` | Standar As Propeller Mini 4WD | Poros transmisi 4WD 76.5 mm + 2 pinion bevel | 132 | 2.2 KB (Draco) |
 | `mass-damper.glb` / `.js` | Standar Tamiya Racing | Damper pemberat kuningan (`damper_weight`, `damper_pole`) | 664 | 9 KB (Draco) |
 | `battery-aa.glb` / `.js` | SolidWorks `Battery.SLDPRT` | Baterai AA (`body`, `terminals`) | 86 | 4 KB (Draco) |
 | `plate-frp-front.glb` / `.js` | Standar Tamiya FRP Multi Stay | Bumper plate FRP depan multi-roller | 265 | 7 KB (Draco) |

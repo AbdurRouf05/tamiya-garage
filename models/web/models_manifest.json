@@ -395,6 +395,40 @@
     },
     "base64_sync": true
   },
+  "rc-tt01": {
+    "filename": "rc-tt01.glb",
+    "js_filename": "rc-tt01.js",
+    "js_key": "rcTt01",
+    "size_kb": 767.7,
+    "polygons": 155551,
+    "submeshes": [
+      "body_posts",
+      "drivetrain",
+      "electronics",
+      "rims",
+      "sasis",
+      "suspension",
+      "tires"
+    ],
+    "bounding_box": {
+      "min": [
+        -6.7509,
+        -3.9605,
+        -1.8013
+      ],
+      "max": [
+        7.1977,
+        3.9201,
+        10.7945
+      ],
+      "dimensions": [
+        13.9486,
+        7.8806,
+        12.5958
+      ]
+    },
+    "base64_sync": true
+  },
   "roller-13mm": {
     "filename": "roller-13mm.glb",
     "js_filename": "roller-13mm.js",

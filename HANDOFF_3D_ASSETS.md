@@ -55,7 +55,8 @@ Semua model di `models/web/` telah dikalibrasi mengikuti sistem koordinat Three.
 Semua file berikut sudah terkompresi Draco, valid manifold, dan memiliki pasangan file Base64 `.js`:
 
 | File Model | File JS | Sumber / Asal | Komponen Internal | Segitiga | Ukuran GLB |
-|---|---|---|---|---|---|
+| `super1.glb` | `super1.js` | Printables 1612062 | 8 submesh sasis Super-1 | 339,551 | 865 KB |
+| `rc-tt01.glb` | `rc-tt01.js` | GrabCAD Tamiya TT-01 RC | `sasis`, `suspension`, `drivetrain`, `electronics`, `body_posts`, `rims`, `tires` | 155,551 | 768 KB |
 | `wheel-3spoke.glb` | `wheel-3spoke.js` | SolidWorks `Velg.SLDPRT` + `Tire.SLDPRT` | `rim`, `tire` | 1,162 | 32 KB |
 | `wheel-6spoke.glb` | `wheel-6spoke.js` | GrabCAD `Mini 4WD Racing.stp` | `rim`, `tire` | 3,542 | 57 KB |
 | `wheel-cyclone.glb` | `wheel-cyclone.js` | GrabCAD `Magnum Tamiya FULL.IGS` | `rim`, `tire` | 4,210 | 50 KB |
@@ -76,13 +77,16 @@ Semua file berikut sudah terkompresi Draco, valid manifold, dan memiliki pasanga
 | `axle-propeller.glb` | `axle-propeller.js` | SolidWorks `Axel Double Gear` | `propeller_shaft` (panjang 76.5 mm + pinion) | 132 | 2 KB |
 | `sliding-spoiler.glb` | `sliding-spoiler.js` | Thingiverse 927487 | Mesh tunggal | 9,998 | 24 KB |
 
-> **Catatan Manifes Mesin**: Seluruh metadata, batas *bounding box*, ukuran dimensi, dan nama *submesh* diekspor secara otomatis ke file JSON siap baca: [models/web/models_manifest.json](models/web/models_manifest.json).
+> **Catatan Manifes Mesin**: Seluruh metadata, batas *bounding box*, ukuran dimensi, dan nama *submesh* diekspor secara otomatis ke file JSON siap baca: [models/web/models_manifest.json](models/web/models_manifest.json) (23/23 model tervalidasi 100%).
 
 ---
 
 ## 5. Skrip Otomasi Pembuat di `tools/`
 
 Jika perlu mengubah atau membuat ulang aset, jalankan skrip Python melalui Blender atau Python 3.11:
+
+- `tools/build_rc_tt01.py`: Mengonversi kit mobil RC Tamiya TT-01 4WD skala 1/10 dari STL asli 791k poligon menjadi 155k poligon teroptimasi Draco dengan 7 submesh modular (`sasis`, `suspension`, `drivetrain`, `electronics`, `body_posts`, `rims`, `tires`), dikalibrasi ke wheelbase simulator 10.8 unit.
+- `tools/render_rc_tt01.py`: Merender preview visual beresolusi tinggi dengan studio lighting dan material warna-warni untuk TT-01 (`models/work/test_rc_tt01_showcase.png`).
 
 - `tools/build_wheel_3spoke.py`: Membangun velg 3-spoke dan ban slick berdasarkan dimensi `Velg.SLDPRT`.
 - `tools/extract_wheels.py`: Mengekstrak velg 6-spoke dan ban balap dari `racing_raw.glb`.
@@ -108,6 +112,7 @@ Bagi AI / developer yang akan mengintegrasikan part-part baru ini ke `index.html
 ### A. Memuat Script Model di `<head>`
 Tambahkan tag `<script src="...">` untuk model baru di bagian daftar script model:
 ```html
+<script src="models/web/rc-tt01.js"></script>
 <script src="models/web/wheel-3spoke.js"></script>
 <script src="models/web/wheel-6spoke.js"></script>
 <script src="models/web/wheel-cyclone.js"></script>
@@ -119,6 +124,8 @@ Tambahkan tag `<script src="...">` untuk model baru di bagian daftar script mode
 <script src="models/web/plate-frp-rear.js"></script>
 <script src="models/web/battery-aa.js"></script>
 <script src="models/web/gear-set.js"></script>
+<script src="models/web/axle-wheel.js"></script>
+<script src="models/web/axle-propeller.js"></script>
 ```
 
 ### B. Mendaftarkan di `MODEL_GEO`
@@ -133,20 +140,25 @@ function loadModelKey(key, cb) {
 }
 
 // Model baru akan memiliki struktur sub-mesh yang jelas:
+// rc-tt01 (Mobil RC): sasis, suspension, drivetrain, electronics, body_posts, rims, tires
 // wheel: scene.getObjectByName('rim'), scene.getObjectByName('tire')
 // mass-damper: scene.getObjectByName('damper_weight'), scene.getObjectByName('damper_pole')
 // battery: scene.getObjectByName('body'), scene.getObjectByName('terminals')
 ```
 
 ### C. Menambahkan Opsi Part di Menu Garasi
-1. **Menu Roda (`PARTS.wheel.options`)**:
+1. **Pilihan Mobil / Sasis Utama**:
+   - `super1`: "Tamiya Super-1 Chassis (Mini 4WD)"
+   - `rc-tt01`: "Tamiya TT-01 4WD Touring Car (RC 1/10)" (Pilihan mobil non-Mini 4WD lengkap dengan suspensi wishbone, coilover, dinamo RS-540, driveshaft biru anodized, ESC heatsink, baterai 7.2V stick pack, velg & ban)
+2. **Menu Roda (`PARTS.wheel.options`)**:
    - `wheel-3spoke`: "Velg 3-Spoke Dish (SolidWorks CAD)"
    - `wheel-6spoke`: "Velg 6-Spoke Racing (GrabCAD)"
    - `wheel-cyclone`: "Velg 5-Spoke Spiral Magnum"
-2. **Menu Roller (`PARTS.roller.options`)**:
+3. **Menu Roller (`PARTS.roller.options`)**:
    - `r13_3spoke`: "Roller 13 mm 3-Spoke Plastik"
    - `r19_aero`: "Roller 19 mm Aero Aluminium"
-3. **Menu Dinamo (`PARTS.motor.options`)**:
+4. **Menu Dinamo (`PARTS.motor.options`)**:
    - `fa130_pro`: "Mabuchi FA-130 PRO Double-Shaft" (khusus sasis MS/MA)
-4. **Slot Upgrade Baru**:
+5. **Slot Upgrade Baru**:
    - `damper`: "Mass Damper Kuningan" (dipasang pada lubang bumper FRP depan/belakang)
+   - `axle_propeller`: "4WD Propeller Shaft + Bevel Pinion Gears"
